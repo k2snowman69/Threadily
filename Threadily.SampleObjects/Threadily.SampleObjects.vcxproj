@@ -54,40 +54,52 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <OutDir>$(SolutionDir)$(Configuration)\$(ProjectName)\</OutDir>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <OutDir>$(SolutionDir)$(Configuration)\$(ProjectName)\</OutDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <OutDir>$(SolutionDir)$(Configuration)\$(ProjectName)\</OutDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <OutDir>$(SolutionDir)$(Configuration)\$(ProjectName)\</OutDir>
+  </PropertyGroup>
   <ItemDefinitionGroup>
     <ClCompile>
       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">WIN32;_DEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">WIN32;NDEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">_DEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NDEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">C:\Users\ricky\Desktop\Threadily\Debug\Threadily</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(OutDir)..\Threadily</AdditionalIncludeDirectories>
       <RuntimeTypeInfo Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</RuntimeTypeInfo>
       <RuntimeTypeInfo Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</RuntimeTypeInfo>
       <RuntimeTypeInfo Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</RuntimeTypeInfo>
       <RuntimeTypeInfo Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</RuntimeTypeInfo>
+      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(OutDir)..\Threadily</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(OutDir)..\Threadily</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(OutDir)..\Threadily</AdditionalIncludeDirectories>
     </ClCompile>
     <PostBuildEvent>
       <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">cd
 copy /Y *.h $(OutputPath).
-"C:\Program Files\Emscripten\emscripten\1.35.0\emcc" -std=c++11 ExampleThreadObject.cpp ObservableVectorPointerThreadObject.cpp -I "C:\Users\ricky\Desktop\Threadily\Debug\Threadily" -o $(OutputPath)$(TargetName).bc -Oz
+"C:\Program Files\Emscripten\emscripten\1.35.0\emcc" -std=c++11 ExampleThreadObject.cpp ObservableVectorPointerThreadObject.cpp -I "$(OutputPath)..\Threadily" -o $(OutputPath)$(TargetName).bc -Oz
 </Command>
     </PostBuildEvent>
     <PostBuildEvent>
       <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">cd
 copy /Y *.h $(OutputPath).
-"C:\Program Files\Emscripten\emscripten\1.35.0\emcc" -std=c++11 ExampleThreadObject.cpp ObservableVectorPointerThreadObject.cpp -I "C:\Users\ricky\Desktop\Threadily\Debug\Threadily" -o $(OutputPath)$(TargetName).bc -Oz
+"C:\Program Files\Emscripten\emscripten\1.35.0\emcc" -std=c++11 ExampleThreadObject.cpp ObservableVectorPointerThreadObject.cpp -I "$(OutputPath)..\Threadily" -o $(OutputPath)$(TargetName).bc -Oz
 </Command>
     </PostBuildEvent>
     <PostBuildEvent>
       <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">cd
 copy /Y *.h $(OutputPath).
-"C:\Program Files\Emscripten\emscripten\1.35.0\emcc" -std=c++11 ExampleThreadObject.cpp ObservableVectorPointerThreadObject.cpp -I "C:\Users\ricky\Desktop\Threadily\Debug\Threadily" -o $(OutputPath)$(TargetName).bc -Oz
+"C:\Program Files\Emscripten\emscripten\1.35.0\emcc" -std=c++11 ExampleThreadObject.cpp ObservableVectorPointerThreadObject.cpp -I "$(OutputPath)..\Threadily" -o $(OutputPath)$(TargetName).bc -Oz
 </Command>
     </PostBuildEvent>
     <PostBuildEvent>
       <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">cd
 copy /Y *.h $(OutputPath).
-"C:\Program Files\Emscripten\emscripten\1.35.0\emcc" -std=c++11 ExampleThreadObject.cpp ObservableVectorPointerThreadObject.cpp -I "C:\Users\ricky\Desktop\Threadily\Debug\Threadily" -o $(OutputPath)$(TargetName).bc -Oz
+"C:\Program Files\Emscripten\emscripten\1.35.0\emcc" -std=c++11 ExampleThreadObject.cpp ObservableVectorPointerThreadObject.cpp -I "$(OutputPath)..\Threadily" -o $(OutputPath)$(TargetName).bc -Oz
 </Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>

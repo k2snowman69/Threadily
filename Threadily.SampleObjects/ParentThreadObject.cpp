@@ -16,7 +16,7 @@ namespace threadily
 		ParentThreadObject::ParentThreadObject(std::shared_ptr<IThreadObjectManager> objectManager, unsigned int threadId, unsigned int id) :
 			ThreadObject(objectManager, threadId, id)
 		{
-			exampleObject = std::make_shared<Observable<std::shared_ptr<ExampleThreadObject>>>();
+			exampleObject = std::make_shared<Observable<ExampleThreadObject>>(threadId);
 			auto threadObjectManager = std::make_shared<ThreadObjectManager<ExampleThreadObject>>(objectManager->getThreadManager());
 			exampleObject->set(threadObjectManager->getOrCreateObject(threadId, 0));
 		}

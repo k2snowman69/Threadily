@@ -6,6 +6,8 @@
 #include <functional>
 
 #include "IObservable.h"
+#include "IThreadObjectManager.h"
+#include "IThreadObject.h"
 #include "IThreadQueueItemManager.h"
 
 #include "ThreadQueueItem.h"
@@ -58,7 +60,7 @@ namespace threadily {
 		}
 	};
 
-	template<class T>
+	template <class T, class Enable = void>
 	class Observable : public IObservable
 	{
 	private:
@@ -152,6 +154,127 @@ namespace threadily {
 			}
 
 			std::function<void(T newValue)> handler = [thread, thingToNotify](T newValue)
+			{
+				thread->addWork(std::make_shared<ThreadQueueItem>([thingToNotify, newValue]()
+				{
+					thingToNotify->set(newValue);
+				}));
+			};
+
+			return this->subscribe(handler);
+		}
+	};
+
+	template <class T>
+	class Observable<T, typename std::enable_if<std::is_base_of<IThreadObject, T>::value>::type> : public IObservable
+	{
+	private:
+		unsigned int threadId;
+		std::shared_ptr<T> value;
+		std::vector<std::weak_ptr<SubscribeHandle<std::shared_ptr<T>>>> subscribers;
+	public:
+		Observable(unsigned int threadId)
+		{
+			this->threadId = threadId;
+		};
+
+		std::shared_ptr<T> get()
+		{
+			return this->value;
+		}
+
+		void set(std::shared_ptr<T> newValue)
+		{
+			// if newValue was set on a different thread, we need to get this threads version of that object
+			if (newValue != nullptr && newValue->getThreadId() != this->threadId)
+			{
+				std::shared_ptr<IThreadObject> peerObject = newValue->getThreadManager()->getPeer(this->threadId, newValue);
+				newValue = std::static_pointer_cast<T>(peerObject);
+			}
+			if (this->value != newValue)
+			{
+				this->value = newValue;
+
+				// notify all handlers, if we couldn't get a lock, queue that handle for removal
+				auto it = this->subscribers.begin();
+				while (it != this->subscribers.end())
+				{
+					if (std::shared_ptr<SubscribeHandle<std::shared_ptr<T>>> subscriber = it->lock())
+					{
+						subscriber->runCallback(newValue);
+						++it;
+					}
+					else
+					{
+						it = this->subscribers.erase(it);
+					}
+				}
+			}
+		}
+
+		std::shared_ptr<ISubscribeHandle> subscribe(std::function<void(std::shared_ptr<T> newValue)> handler)
+		{
+			std::shared_ptr<SubscribeHandle<std::shared_ptr<T>>> newSub = std::make_shared<SubscribeHandle<std::shared_ptr<T>>>(handler);
+			this->subscribers.push_back(newSub);
+
+			return newSub;
+		}
+
+		std::shared_ptr<ISubscribeHandle> subscribe(ISubscribeHandleCallback<std::shared_ptr<T>>* handler)
+		{
+			std::shared_ptr<SubscribeHandle<std::shared_ptr<T>>> newSub = std::make_shared<SubscribeHandle<std::shared_ptr<T>>>(handler);
+			this->subscribers.push_back(newSub);
+
+			return newSub;
+		}
+
+		void unsubscribe(std::shared_ptr<ISubscribeHandle> handleToRemove)
+		{
+			for (auto it = this->subscribers.begin(); it != this->subscribers.end(); ++it)
+			{
+				if (it->expired())
+				{
+					continue;
+				}
+
+				auto d = it->lock();
+				if (d == handleToRemove)
+				{
+					this->subscribers.erase(it);
+					break;
+				}
+			}
+		}
+
+		size_t getSubscribersCount()
+		{
+			// clear out expired functions
+			auto it = this->subscribers.begin();
+			while (it != this->subscribers.end())
+			{
+				if (std::shared_ptr<SubscribeHandle<std::shared_ptr<T>>> subscriber = it->lock())
+				{
+					++it;
+				}
+				else
+				{
+					it = this->subscribers.erase(it);
+				}
+			}
+
+			// return final size
+			return this->subscribers.size();
+		}
+
+		virtual std::shared_ptr<ISubscribeHandle> subscribe(std::shared_ptr<IThreadQueueItemManager> thread, std::shared_ptr<IObservable> other) override
+		{
+			auto thingToNotify = std::static_pointer_cast<Observable<T>>(other);
+			if (thingToNotify == nullptr)
+			{
+				throw std::runtime_error("Current variable type and argument 'other' type are not the same. Cannot create a notification link between the two variables.");
+			}
+
+			std::function<void(std::shared_ptr<T> newValue)> handler = [thread, thingToNotify](std::shared_ptr<T> newValue)
 			{
 				thread->addWork(std::make_shared<ThreadQueueItem>([thingToNotify, newValue]()
 				{

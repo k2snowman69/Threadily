@@ -6,8 +6,6 @@
 #include <mutex>
 #endif
 
-#include "IThreadObject.h"
-#include "IThreadManager.h"
 #include "IThreadObjectManager.h"
 
 namespace threadily {
@@ -99,6 +97,14 @@ namespace threadily {
 				}
 			}
 			return peers;
+		}
+
+		virtual std::shared_ptr<IThreadObject> getPeer(unsigned int threadId, std::shared_ptr<IThreadObject> object) override
+		{
+#if !defined(EMSCRIPTEN) || defined(USE_PTHREADS)
+			std::lock_guard<std::mutex> lock(instances_m);
+#endif
+			return this->getObject(threadId, object->getId());
 		}
 
 		std::shared_ptr<T> getObject(unsigned int threadId, int id)

@@ -133,9 +133,11 @@ namespace threadily
 				threadObject_Service->exampleObject->set(newChildObject);
 				e.wait();
 
-				Assert::IsTrue(threadObject_UI->exampleObject->get() != nullptr, L"Make sure the UI object was set");
+				Assert::IsTrue(nullptr != threadObject_UI->exampleObject->get(), L"Make sure the UI object was set");
+				Assert::IsTrue(ThreadIds::UI == threadObject_UI->exampleObject->get()->getThreadId(), L"Expected the example object to be running on the UI thread");
+				Assert::IsTrue(ThreadIds::Service == threadObject_Service->exampleObject->get()->getThreadId(), L"Expected the example object to be running on the Service thread");
 				Assert::AreEqual(threadObject_UI->exampleObject->get()->getId(), threadObject_Service->exampleObject->get()->getId(), L"Make sure they have the same value");
-				Assert::IsFalse(threadObject_UI->exampleObject->get().get() != threadObject_Service->exampleObject->get().get(), L"Make sure they are two distinct pointers");
+				Assert::IsTrue(threadObject_UI->exampleObject->get().get() != threadObject_Service->exampleObject->get().get(), L"Make sure they are two distinct pointers");
 				Assert::AreEqual(threadObject_UI->exampleObject->get()->name->get(), threadObject_Service->exampleObject->get()->name->get(), L"Make sure they have the same name value");
 			}
 		};

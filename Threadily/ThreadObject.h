@@ -28,11 +28,10 @@ namespace threadily {
 		unsigned int id;
 		std::weak_ptr<IThreadObjectManager> objectManager;
 		void addDisposeListener(std::shared_ptr<ThreadObject> thingToNotify);
-	protected:
-		std::shared_ptr<IThreadObjectManager> getObjectManager();
 	public:
 		void addPeerObjectToNotify(std::shared_ptr<ThreadObject>);
 		void initLinks(std::shared_ptr<ThreadObject> baseObject);
+		virtual std::shared_ptr<IThreadObjectManager> getThreadManager() override;
 		virtual unsigned int getThreadId() override;
 		virtual unsigned int getId() override;
 		virtual std::vector<std::shared_ptr<IObservable>> getObservableProperties() override;
