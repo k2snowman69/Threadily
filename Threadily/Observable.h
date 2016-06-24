@@ -188,7 +188,7 @@ namespace threadily {
 			// if newValue was set on a different thread, we need to get this threads version of that object
 			if (newValue != nullptr && newValue->getThreadId() != this->threadId)
 			{
-				std::shared_ptr<IThreadObject> peerObject = newValue->getThreadManager()->getPeer(this->threadId, newValue);
+				std::shared_ptr<IThreadObject> peerObject = newValue->getObjectManager()->getPeer(this->threadId, newValue);
 				newValue = std::static_pointer_cast<T>(peerObject);
 			}
 			if (this->value != newValue)

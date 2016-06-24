@@ -31,7 +31,7 @@ namespace threadily {
 	public:
 		void addPeerObjectToNotify(std::shared_ptr<ThreadObject>);
 		void initLinks(std::shared_ptr<ThreadObject> baseObject);
-		virtual std::shared_ptr<IThreadObjectManager> getThreadManager() override;
+		virtual std::shared_ptr<IThreadObjectManager> getObjectManager() override;
 		virtual unsigned int getThreadId() override;
 		virtual unsigned int getId() override;
 		virtual std::vector<std::shared_ptr<IObservable>> getObservableProperties() override;

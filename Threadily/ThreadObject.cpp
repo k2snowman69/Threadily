@@ -67,7 +67,7 @@ namespace threadily
 	{
 		return this->id;
 	}
-	std::shared_ptr<IThreadObjectManager> ThreadObject::getThreadManager()
+	std::shared_ptr<IThreadObjectManager> ThreadObject::getObjectManager()
 	{
 		return this->objectManager.lock();
 	}
