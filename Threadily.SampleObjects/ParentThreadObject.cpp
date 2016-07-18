@@ -19,12 +19,16 @@ namespace threadily
 			exampleObject = std::make_shared<Observable<ExampleThreadObject>>(threadId);
 			auto threadObjectManager = std::make_shared<ThreadObjectManager<ExampleThreadObject>>(objectManager->getThreadManager());
 			exampleObject->set(threadObjectManager->getOrCreateObject(threadId, 0));
+
+			exampleObjects = std::make_shared<Observable<std::vector<ExampleThreadObject>>>(threadId);
+			exampleObjects->insert(0, exampleObject->get());
 		}
 
 		std::vector<std::shared_ptr<IObservable>> ParentThreadObject::getObservableProperties()
 		{
 			auto d = std::vector<std::shared_ptr<IObservable>>();
 			d.push_back(exampleObject);
+			d.push_back(exampleObjects);
 			return d;
 		}
 #ifdef EMSCRIPTEN

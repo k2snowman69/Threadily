@@ -338,7 +338,7 @@ namespace threadily {
 	};
 
 	template<class T>
-	class Observable<std::vector<T>> : public IObservable
+	class Observable<std::vector<T>, typename std::enable_if<!std::is_base_of<IThreadObject, T>::value>::type> : public IObservable
 	{
 	private:
 		std::vector<T> value;
@@ -463,6 +463,161 @@ namespace threadily {
 						break;
 					default:
 						throw std::runtime_error("Observable<vector<T>::subscribe - ObservableActionType not supported");
+					}
+				}));
+			};
+
+			return this->subscribe(handler);
+		}
+	};
+
+	// ObservableVector for IThreadObjects
+	template<class T>
+	class Observable<std::vector<T>, typename std::enable_if<std::is_base_of<IThreadObject, T>::value>::type> : public IObservable
+	{
+	private:
+		unsigned int threadId;
+		std::vector<std::shared_ptr<T>> value;
+		std::vector<std::weak_ptr<SubscribeHandle<std::vector<std::shared_ptr<T>>>>> listOpSubscribers;
+
+		void notifySubscribers(std::shared_ptr<T> value, size_t index, ObservableActionType action)
+		{
+			// notify all handlers, if we couldn't get a lock, queue that handle for removal
+			auto it = this->listOpSubscribers.begin();
+			while (it != this->listOpSubscribers.end())
+			{
+				if (std::shared_ptr<SubscribeHandle<std::vector<std::shared_ptr<T>>>> subscriber = it->lock())
+				{
+					subscriber->runCallback(value, index, action);
+					++it;
+				}
+				else
+				{
+					it = this->listOpSubscribers.erase(it);
+				}
+			}
+		}
+	public:
+		Observable(unsigned int threadId)
+		{
+			this->threadId = threadId;
+		};
+
+		size_t size()
+		{
+			return this->value.size();
+		}
+
+		std::shared_ptr<T> at(size_t index)
+		{
+			return this->value.at(index);
+		}
+
+		void insert(size_t index, std::shared_ptr<T> value)
+		{
+			// if value was set on a different thread, we need to get this threads version of that object
+			if (value != nullptr && value->getThreadId() != this->threadId)
+			{
+				std::shared_ptr<IThreadObject> peerObject = value->getObjectManager()->getPeer(this->threadId, value);
+				value = std::static_pointer_cast<T>(peerObject);
+			}
+
+			while (this->value.size() < index)
+			{
+				this->value.emplace_back();
+			}
+			auto it = std::next(this->value.begin(), index);
+
+			this->value.insert(it, value);
+
+			this->notifySubscribers(value, index, ObservableActionType::Insert);
+		}
+
+		void set(size_t index, std::shared_ptr<T> value)
+		{
+			// if value was set on a different thread, we need to get this threads version of that object
+			if (value != nullptr && value->getThreadId() != this->threadId)
+			{
+				std::shared_ptr<IThreadObject> peerObject = value->getObjectManager()->getPeer(this->threadId, value);
+				value = std::static_pointer_cast<T>(peerObject);
+			}
+
+			// if its actually an insert
+			if (this->value.size() <= index)
+			{
+				this->insert(index, value);
+			}
+			// if it is a replace
+			else
+			{
+				this->value[index] = value;
+
+				this->notifySubscribers(value, index, ObservableActionType::Set);
+			}
+		}
+
+		void erase(size_t index)
+		{
+			auto result = this->at(index);
+
+			auto it = std::next(this->value.begin(), index);
+			this->value.erase(it);
+
+			this->notifySubscribers(result, index, ObservableActionType::Erase);
+		}
+
+		std::shared_ptr<ISubscribeHandle> subscribe(std::function<void(std::shared_ptr<T> newValue, size_t index, ObservableActionType action)> handler)
+		{
+			std::shared_ptr<SubscribeHandle<std::vector<std::shared_ptr<T>>>> newSub = std::make_shared<SubscribeHandle<std::vector<std::shared_ptr<T>>>>(handler);
+			this->listOpSubscribers.push_back(newSub);
+
+			return newSub;
+		}
+
+		std::shared_ptr<ISubscribeHandle> subscribe(std::shared_ptr<ISubscribeHandleVectorCallback<std::shared_ptr<T>>> handler)
+		{
+			std::shared_ptr<SubscribeHandle<std::vector<std::shared_ptr<T>>>> newSub = std::make_shared<SubscribeHandle<std::vector<std::shared_ptr<T>>>>(handler);
+			this->subscribers.push_back(newSub);
+
+			return newSub;
+		}
+
+		void unsubscribe(std::shared_ptr<ISubscribeHandle> handleToRemove)
+		{
+			for (auto it = this->listOpSubscribers.begin(); it != this->listOpSubscribers.end(); ++it)
+			{
+				if (it == handleToRemove)
+				{
+					this->listOpSubscribers.erase(it);
+					break;
+				}
+			}
+		}
+		virtual std::shared_ptr<ISubscribeHandle> subscribe(std::shared_ptr<IThreadQueueItemManager> thread, std::shared_ptr<IObservable> other) override
+		{
+			auto thingToNotify = std::dynamic_pointer_cast<Observable<std::vector<T>>>(other);
+			if (thingToNotify == nullptr)
+			{
+				throw std::runtime_error("Current variable type and argument 'other' type are not the same. Cannot create a notification link between the two variables.");
+			}
+
+			std::function<void(std::shared_ptr<T> newValue, size_t index, ObservableActionType action)> handler = [thread, thingToNotify](std::shared_ptr<T> newValue, size_t index, ObservableActionType action)
+			{
+				thread->addWork(std::make_shared<ThreadQueueItem>([thingToNotify, newValue, index, action]()
+				{
+					switch (action)
+					{
+					case ObservableActionType::Insert:
+						thingToNotify->insert(index, newValue);
+						break;
+					case ObservableActionType::Erase:
+						thingToNotify->erase(index);
+						break;
+					case ObservableActionType::Set:
+						thingToNotify->set(index, newValue);
+						break;
+					default:
+						throw std::runtime_error("Observable<vector<std::shared_ptr<T>>::subscribe - ObservableActionType not supported");
 					}
 				}));
 			};

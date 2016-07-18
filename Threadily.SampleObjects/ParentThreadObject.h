@@ -15,6 +15,7 @@ namespace threadily
 			std::vector<std::shared_ptr<IObservable>> allObservables;
 		public:
 			std::shared_ptr<Observable<ExampleThreadObject>> exampleObject;
+			std::shared_ptr<Observable<std::vector<ExampleThreadObject>>> exampleObjects;
 		public:
 			ParentThreadObject(std::shared_ptr<IThreadObjectManager> objectManager, unsigned int threadId, unsigned int id);
 
