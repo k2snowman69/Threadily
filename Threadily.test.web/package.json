@@ -1,0 +1,12 @@
+{
+  "name": "threadily.test.web",
+  "version": "0.0.0",
+  "description": "Threadily.test.web",
+  "main": "app.js",
+  "author": {
+    "name": "ricky"
+  },
+  "dependencies": {
+    "mocha": "^3.0.0"
+  }
+}

@@ -7,7 +7,7 @@
 #include <ThreadObjectManager.h>
 
 #include "CountingThreadObjectManager.h"
-#include "ExampleThreadObject.h"
+#include "PrimativesThreadObject.h"
 
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 
@@ -66,7 +66,7 @@ namespace threadily
 				threadManager->getOrCreateThread(ThreadIds::UI, std::set<unsigned int>({ ThreadIds::App }), nullptr);
 				threadManager->getOrCreateThread(ThreadIds::App, std::set<unsigned int>({ ThreadIds::UI }), nullptr);
 
-				auto manager = std::make_shared<ThreadObjectManager<ExampleThreadObject>>(threadManager);
+				auto manager = std::make_shared<ThreadObjectManager<PrimativesThreadObject>>(threadManager);
 
 				auto objectUI = manager->getOrCreateObject(ThreadIds::UI, 0);
 				auto objectApp = manager->getOrCreateObject(ThreadIds::App, 0);
@@ -91,7 +91,7 @@ namespace threadily
 				auto appThread = threadManager->getOrCreateThread(ThreadIds::App, std::set<unsigned int>({ ThreadIds::Service, ThreadIds::UI }), nullptr);
 				auto serviceThread = threadManager->getOrCreateThread(ThreadIds::Service, std::set<unsigned int>({ ThreadIds::App }), nullptr);
 
-				auto manager = std::make_shared<ThreadObjectManager<ExampleThreadObject>>(threadManager);
+				auto manager = std::make_shared<ThreadObjectManager<PrimativesThreadObject>>(threadManager);
 
 				// create the ui first then the service thread. These should have nothing to do with one another
 				auto objectUI = manager->getOrCreateObject(ThreadIds::UI, 0);
@@ -121,7 +121,7 @@ namespace threadily
 				threadManager->getOrCreateThread(ThreadIds::UI, std::set<unsigned int>(), nullptr);
 				threadManager->getOrCreateThread(ThreadIds::App, std::set<unsigned int>({ ThreadIds::UI }), nullptr);
 
-				auto manager = std::make_shared<ThreadObjectManager<ExampleThreadObject>>(threadManager);
+				auto manager = std::make_shared<ThreadObjectManager<PrimativesThreadObject>>(threadManager);
 
 				auto objectUI = manager->getOrCreateObject(ThreadIds::UI, 0);
 				auto objectApp = manager->getOrCreateObject(ThreadIds::App, 0);
@@ -142,7 +142,7 @@ namespace threadily
 				threadManager->getOrCreateThread(ThreadIds::UI, std::set<unsigned int>(), nullptr);
 				threadManager->getOrCreateThread(ThreadIds::App, std::set<unsigned int>({ ThreadIds::UI }), nullptr);
 
-				auto manager = std::make_shared<ThreadObjectManager<ExampleThreadObject>>(threadManager);
+				auto manager = std::make_shared<ThreadObjectManager<PrimativesThreadObject>>(threadManager);
 
 				auto objectApp = manager->getOrCreateObject(ThreadIds::App, 0);
 				auto objectUI = manager->getOrCreateObject(ThreadIds::UI, 0);
@@ -163,7 +163,7 @@ namespace threadily
 				threadManager->getOrCreateThread(ThreadIds::UI, std::set<unsigned int>({ ThreadIds::App }), nullptr);
 				threadManager->getOrCreateThread(ThreadIds::App, std::set<unsigned int>(), nullptr);
 
-				auto manager = std::make_shared<ThreadObjectManager<ExampleThreadObject>>(threadManager);
+				auto manager = std::make_shared<ThreadObjectManager<PrimativesThreadObject>>(threadManager);
 
 				auto objectUI = manager->getOrCreateObject(ThreadIds::UI, 0);
 				auto objectApp = manager->getOrCreateObject(ThreadIds::App, 0);
@@ -184,7 +184,7 @@ namespace threadily
 				threadManager->getOrCreateThread(ThreadIds::UI, std::set<unsigned int>({ ThreadIds::App }), nullptr);
 				threadManager->getOrCreateThread(ThreadIds::App, std::set<unsigned int>(), nullptr);
 
-				auto manager = std::make_shared<ThreadObjectManager<ExampleThreadObject>>(threadManager);
+				auto manager = std::make_shared<ThreadObjectManager<PrimativesThreadObject>>(threadManager);
 
 				auto objectApp = manager->getOrCreateObject(ThreadIds::App, 0);
 				auto objectUI = manager->getOrCreateObject(ThreadIds::UI, 0);
@@ -203,11 +203,11 @@ namespace threadily
 				threadManager->getOrCreateThread(ThreadIds::UI, std::set<unsigned int>(), nullptr);
 				threadManager->getOrCreateThread(ThreadIds::App, std::set<unsigned int>({ ThreadIds::UI }), nullptr);
 
-				auto manager = std::make_shared<CountingThreadObjectManager<ExampleThreadObject>>(threadManager);
+				auto manager = std::make_shared<CountingThreadObjectManager<PrimativesThreadObject>>(threadManager);
 				auto objectUI = manager->getOrCreateObject(ThreadIds::UI, 0);
 				auto objectApp = manager->getOrCreateObject(ThreadIds::App, 0);
 
-				Assert::AreEqual(2U, manager->getCreatedCount(), L"Expected our custom creation method to be called");
+				Assert::AreEqual(2U, manager->getCountOfObjectsCreated(), L"Expected our custom creation method to be called");
 			}
 		};
 	}

@@ -12,17 +12,133 @@
 
 #include "ThreadQueueItem.h"
 
+/// Template for how to create callback handlers for Observable types. Use before the EMSCRIPTEN_BINDINGS line.
+
+#define defineCallbackHandler(typeName, externalNameExtension) \
+	class ISubscribeHandle##externalNameExtension##CallbackWrapper : public wrapper<ISubscribeHandleCallback<typeName>> \
+	{ \
+	public: \
+		EMSCRIPTEN_WRAPPER(ISubscribeHandle##externalNameExtension##CallbackWrapper); \
+		void onChange(typeName work) { \
+			return call<void>("onChange", work); \
+		} \
+	}; \
+
+#define defineThreadObjectCallbackHandler(typeName, externalNameExtension) \
+	class ISubscribeHandle##externalNameExtension##CallbackWrapper : public wrapper<ISubscribeHandleCallback<typeName>> \
+	{ \
+	public: \
+		EMSCRIPTEN_WRAPPER(ISubscribeHandle##externalNameExtension##CallbackWrapper); \
+		void onChange(std::shared_ptr<typeName> work) { \
+			return call<void>("onChange", work); \
+		} \
+	}; \
+
+/// Template for how to create callback handlers for Observable Vector types. Use before the EMSCRIPTEN_BINDINGS line.
+#define defineCallbackVectorHandler(typeName, externalNameExtension) \
+	class ISubscribeHandle##externalNameExtension##VectorCallbackWrapper : public wrapper<ISubscribeHandleVectorCallback<typeName>> \
+	{ \
+	public: \
+		EMSCRIPTEN_WRAPPER(ISubscribeHandle##externalNameExtension##VectorCallbackWrapper); \
+		void onChange(typeName work, size_t index, ObservableActionType action) { \
+			return call<void>("onChange", work, index, action); \
+		} \
+	}; \
+
+/// Template for how to create callback handlers for Observable Vector types. Use before the EMSCRIPTEN_BINDINGS line.
+#define defineThreadObjectCallbackVectorHandler(typeName, externalNameExtension) \
+	class ISubscribeHandle##externalNameExtension##VectorCallbackWrapper : public wrapper<ISubscribeHandleVectorCallback<typeName>> \
+	{ \
+	public: \
+		EMSCRIPTEN_WRAPPER(ISubscribeHandle##externalNameExtension##VectorCallbackWrapper); \
+		void onChange(std::shared_ptr<typeName> work, size_t index, ObservableActionType action) { \
+			return call<void>("onChange", work, index, action); \
+		} \
+	}; \
+
+#define QUOTE(str) #str
+#define EXPAND_AND_QUOTE(str) QUOTE(str)
+/// Template for how to create Observable types. Use inside the EMSCRIPTEN_BINDINGS line.
+#define defineObservable(typeName, externalNameExtension) \
+	class_<Observable<typeName>>(EXPAND_AND_QUOTE(Observable##externalNameExtension)) \
+		.smart_ptr<std::shared_ptr<Observable<typeName>>>(EXPAND_AND_QUOTE(Observable##externalNameExtension)) \
+		.function("get", &Observable<typeName>::get) \
+		.function("set", &Observable<typeName>::set) \
+		.function("subscribe", select_overload<std::shared_ptr<ISubscribeHandle>(ISubscribeHandleCallback<typeName>*)>(&Observable<typeName>::subscribe), allow_raw_pointers()) \
+		; \
+	class_<ISubscribeHandleCallback<typeName>>(EXPAND_AND_QUOTE(ISubscribeHandle##externalNameExtension##Callback)) \
+		.smart_ptr<std::shared_ptr<ISubscribeHandleCallback<typeName>>>(EXPAND_AND_QUOTE(ISubscribeHandle##externalNameExtension##Callback)) \
+		.function("onChange", &ISubscribeHandleCallback<typeName>::onChange, pure_virtual()) \
+		.allow_subclass<ISubscribeHandle##externalNameExtension##CallbackWrapper>(EXPAND_AND_QUOTE(ISubscribeHandle##externalNameExtension##CallbackWrapper)) \
+		; \
+
+/// Template for how to create Observable vector types. Use inside the EMSCRIPTEN_BINDINGS line.
+#define defineObservableVector(typeName, externalNameExtension) \
+	class_<Observable<std::vector<typeName>>>(EXPAND_AND_QUOTE(ObservableVector##externalNameExtension)) \
+		.smart_ptr<std::shared_ptr<Observable<std::vector<typeName>>>>(EXPAND_AND_QUOTE(ObservableVector##externalNameExtension)) \
+		.function("size", &Observable<std::vector<typeName>>::size) \
+		.function("at", &Observable<std::vector<typeName>>::at) \
+		.function("insert", &Observable<std::vector<typeName>>::insert) \
+		.function("set", &Observable<std::vector<typeName>>::set) \
+		.function("erase", &Observable<std::vector<typeName>>::erase) \
+		.function("subscribe", select_overload<std::shared_ptr<ISubscribeHandle>(ISubscribeHandleVectorCallback<typeName>*)>(&Observable<std::vector<typeName>>::subscribe), allow_raw_pointers()) \
+		; \
+	class_<ISubscribeHandleVectorCallback<typeName>>(EXPAND_AND_QUOTE(ISubscribeHandle##externalNameExtension##VectorCallback)) \
+		.smart_ptr<std::shared_ptr<ISubscribeHandleVectorCallback<typeName>>>(EXPAND_AND_QUOTE(ISubscribeHandle##externalNameExtension##VectorCallback)) \
+		.function("onChange", &ISubscribeHandleVectorCallback<typeName>::onChange, pure_virtual()) \
+		.allow_subclass<ISubscribeHandle##externalNameExtension##VectorCallbackWrapper>(EXPAND_AND_QUOTE(ISubscribeHandle##externalNameExtension##VectorCallbackWrapper)) \
+		; \
+
+/// Template for how to create Observable types. Use inside the EMSCRIPTEN_BINDINGS line.
+#define defineThreadObjectObservable(typeName, externalNameExtension) \
+	class_<Observable<typeName>>(EXPAND_AND_QUOTE(Observable##externalNameExtension)) \
+		.smart_ptr<std::shared_ptr<Observable<typeName>>>(EXPAND_AND_QUOTE(Observable##externalNameExtension)) \
+		.function("get", &Observable<typeName>::get) \
+		.function("set", &Observable<typeName>::set) \
+		.function("subscribe", select_overload<std::shared_ptr<ISubscribeHandle>(ISubscribeHandleCallback<typeName>*)>(&Observable<typeName>::subscribe), allow_raw_pointers()) \
+		; \
+	class_<ISubscribeHandleCallback<typeName>>(EXPAND_AND_QUOTE(ISubscribeHandle##externalNameExtension##Callback)) \
+		.smart_ptr<std::shared_ptr<ISubscribeHandleCallback<typeName>>>(EXPAND_AND_QUOTE(ISubscribeHandle##externalNameExtension##Callback)) \
+		.function("onChange", &ISubscribeHandleCallback<typeName>::onChange, pure_virtual()) \
+		.allow_subclass<ISubscribeHandle##externalNameExtension##CallbackWrapper>(EXPAND_AND_QUOTE(ISubscribeHandle##externalNameExtension##CallbackWrapper)) \
+		; \
+
+// std::shared_ptr<Observable<std::vector<EmptyThreadObject>>>
+/// Template for how to create Observable vector types. Use inside the EMSCRIPTEN_BINDINGS line.
+#define defineThreadObjectObservableVector(typeName, externalNameExtension) \
+	class_<Observable<std::vector<typeName>>>(EXPAND_AND_QUOTE(ObservableVector##externalNameExtension)) \
+		.smart_ptr<std::shared_ptr<Observable<std::vector<typeName>>>>(EXPAND_AND_QUOTE(ObservableVector##externalNameExtension)) \
+		.function("size", &Observable<std::vector<typeName>>::size) \
+		.function("at", &Observable<std::vector<typeName>>::at) \
+		.function("insert", &Observable<std::vector<typeName>>::insert) \
+		.function("set", &Observable<std::vector<typeName>>::set) \
+		.function("erase", &Observable<std::vector<typeName>>::erase) \
+		.function("subscribe", select_overload<std::shared_ptr<ISubscribeHandle>(ISubscribeHandleVectorCallback<typeName>*)>(&Observable<std::vector<typeName>>::subscribe), allow_raw_pointers()) \
+		; \
+	class_<ISubscribeHandleVectorCallback<typeName>>(EXPAND_AND_QUOTE(ISubscribeHandle##externalNameExtension##VectorCallback)) \
+		.smart_ptr<std::shared_ptr<ISubscribeHandleVectorCallback<typeName>>>(EXPAND_AND_QUOTE(ISubscribeHandle##externalNameExtension##VectorCallback)) \
+		.function("onChange", &ISubscribeHandleVectorCallback<typeName>::onChange, pure_virtual()) \
+		.allow_subclass<ISubscribeHandle##externalNameExtension##VectorCallbackWrapper>(EXPAND_AND_QUOTE(ISubscribeHandle##externalNameExtension##VectorCallbackWrapper)) \
+		; \
+
 namespace threadily {
 
-	template<class T>
+	template <class T, class Enable = void>
 	class ISubscribeHandleCallback
 	{
 	public:
 		virtual void onChange(T newValue) = 0;
 	};
 
+	template <class T>
+	class ISubscribeHandleCallback<T, typename std::enable_if<std::is_base_of<IThreadObject, T>::value>::type>
+	{
+	public:
+		virtual void onChange(std::shared_ptr<T> newValue) = 0;
+	};
+
 	// base template class for observables
-	template<class T>
+	template <class T, class Enable = void>
 	class SubscribeHandle : public ISubscribeHandle
 	{
 	private:
@@ -48,6 +164,45 @@ namespace threadily {
 
 		}
 		void runCallback(T newValue)
+		{
+			if (this->callback != nullptr)
+			{
+				this->callback->onChange(newValue);
+			}
+			else
+			{
+				this->handler(newValue);
+			}
+		}
+	};
+
+	// base template class for observables
+	template <class T>
+	class SubscribeHandle <T, typename std::enable_if<std::is_base_of<IThreadObject, T>::value>::type> : public ISubscribeHandle
+	{
+	private:
+		ISubscribeHandleCallback<T>* callback;
+		std::function<void(std::shared_ptr<T> newValue)> handler;
+	public:
+		SubscribeHandle(std::function<void(std::shared_ptr<T> newValue)> handler)
+		{
+			if (handler == nullptr)
+			{
+				throw std::runtime_error("argument 'handler' required");
+			}
+			callback = nullptr;
+			this->handler = handler;
+		}
+		SubscribeHandle(ISubscribeHandleCallback<T>* callback)
+		{
+			this->callback = callback;
+			this->handler = nullptr;
+		}
+		~SubscribeHandle()
+		{
+
+		}
+		void runCallback(std::shared_ptr<T> newValue)
 		{
 			if (this->callback != nullptr)
 			{
@@ -171,7 +326,7 @@ namespace threadily {
 	private:
 		unsigned int threadId;
 		std::shared_ptr<T> value;
-		std::vector<std::weak_ptr<SubscribeHandle<std::shared_ptr<T>>>> subscribers;
+		std::vector<std::weak_ptr<SubscribeHandle<T>>> subscribers;
 	public:
 		Observable(unsigned int threadId)
 		{
@@ -199,7 +354,7 @@ namespace threadily {
 				auto it = this->subscribers.begin();
 				while (it != this->subscribers.end())
 				{
-					if (std::shared_ptr<SubscribeHandle<std::shared_ptr<T>>> subscriber = it->lock())
+					if (std::shared_ptr<SubscribeHandle<T>> subscriber = it->lock())
 					{
 						subscriber->runCallback(newValue);
 						++it;
@@ -214,15 +369,15 @@ namespace threadily {
 
 		std::shared_ptr<ISubscribeHandle> subscribe(std::function<void(std::shared_ptr<T> newValue)> handler)
 		{
-			std::shared_ptr<SubscribeHandle<std::shared_ptr<T>>> newSub = std::make_shared<SubscribeHandle<std::shared_ptr<T>>>(handler);
+			std::shared_ptr<SubscribeHandle<T>> newSub = std::make_shared<SubscribeHandle<T>>(handler);
 			this->subscribers.push_back(newSub);
 
 			return newSub;
 		}
 
-		std::shared_ptr<ISubscribeHandle> subscribe(ISubscribeHandleCallback<std::shared_ptr<T>>* handler)
+		std::shared_ptr<ISubscribeHandle> subscribe(ISubscribeHandleCallback<T>* handler)
 		{
-			std::shared_ptr<SubscribeHandle<std::shared_ptr<T>>> newSub = std::make_shared<SubscribeHandle<std::shared_ptr<T>>>(handler);
+			std::shared_ptr<SubscribeHandle<T>> newSub = std::make_shared<SubscribeHandle<T>>(handler);
 			this->subscribers.push_back(newSub);
 
 			return newSub;
@@ -252,7 +407,7 @@ namespace threadily {
 			auto it = this->subscribers.begin();
 			while (it != this->subscribers.end())
 			{
-				if (std::shared_ptr<SubscribeHandle<std::shared_ptr<T>>> subscriber = it->lock())
+				if (std::shared_ptr<SubscribeHandle<T>> subscriber = it->lock())
 				{
 					++it;
 				}
@@ -294,18 +449,25 @@ namespace threadily {
 		Set = 2,
 	};
 
-	template<class T>
+	template<class T, class Enable = void>
 	class ISubscribeHandleVectorCallback
 	{
 	public:
 		virtual void onChange(T newValue, size_t index, ObservableActionType action) = 0;
 	};
 
+	template <class T>
+	class ISubscribeHandleVectorCallback <T, typename std::enable_if<std::is_base_of<IThreadObject, T>::value>::type>
+	{
+	public:
+		virtual void onChange(std::shared_ptr<T> newValue, size_t index, ObservableActionType action) = 0;
+	};
+
 	template<class T>
-	class SubscribeHandle<std::vector<T>> : public ISubscribeHandle
+	class SubscribeHandle<std::vector<T>, typename std::enable_if<!std::is_base_of<IThreadObject, T>::value>::type> : public ISubscribeHandle
 	{
 	private:
-		std::shared_ptr<ISubscribeHandleVectorCallback<T>> callback;
+		ISubscribeHandleVectorCallback<T>* callback;
 		std::function<void(T newValue, size_t index, ObservableActionType action)> handler;
 	public:
 		SubscribeHandle(std::function<void(T newValue, size_t index, ObservableActionType action)> handler)
@@ -314,17 +476,57 @@ namespace threadily {
 			{
 				throw std::runtime_error("argument 'handler' required");
 			}
+			callback = nullptr;
 			this->handler = handler;
 		}
-		SubscribeHandle(std::shared_ptr<ISubscribeHandleVectorCallback<T>> callback)
+		SubscribeHandle(ISubscribeHandleVectorCallback<T>* callback)
 		{
 			this->callback = callback;
+			this->handler = nullptr;
 		}
 		~SubscribeHandle()
 		{
 
 		}
 		void runCallback(T newValue, size_t index, ObservableActionType action)
+		{
+			if (this->callback != nullptr)
+			{
+				this->callback->onChange(newValue, index, action);
+			}
+			else
+			{
+				this->handler(newValue, index, action);
+			}
+		}
+	};
+
+	template<class T>
+	class SubscribeHandle<std::vector<T>, typename std::enable_if<std::is_base_of<IThreadObject, T>::value>::type> : public ISubscribeHandle
+	{
+	private:
+		ISubscribeHandleVectorCallback<T>* callback;
+		std::function<void(std::shared_ptr<T> newValue, size_t index, ObservableActionType action)> handler;
+	public:
+		SubscribeHandle(std::function<void(std::shared_ptr<T> newValue, size_t index, ObservableActionType action)> handler)
+		{
+			if (handler == nullptr)
+			{
+				throw std::runtime_error("argument 'handler' required");
+			}
+			callback = nullptr;
+			this->handler = handler;
+		}
+		SubscribeHandle(ISubscribeHandleVectorCallback<T>* callback)
+		{
+			this->callback = callback;
+			this->handler = nullptr;
+		}
+		~SubscribeHandle()
+		{
+
+		}
+		void runCallback(std::shared_ptr<T> newValue, size_t index, ObservableActionType action)
 		{
 			if (this->callback != nullptr)
 			{
@@ -419,10 +621,10 @@ namespace threadily {
 			return newSub;
 		}
 
-		std::shared_ptr<ISubscribeHandle> subscribe(std::shared_ptr<ISubscribeHandleVectorCallback<T>> handler)
+		std::shared_ptr<ISubscribeHandle> subscribe(ISubscribeHandleVectorCallback<T>* handler)
 		{
 			std::shared_ptr<SubscribeHandle<std::vector<T>>> newSub = std::make_shared<SubscribeHandle<std::vector<T>>>(handler);
-			this->subscribers.push_back(newSub);
+			this->listOpSubscribers.push_back(newSub);
 
 			return newSub;
 		}
@@ -478,7 +680,7 @@ namespace threadily {
 	private:
 		unsigned int threadId;
 		std::vector<std::shared_ptr<T>> value;
-		std::vector<std::weak_ptr<SubscribeHandle<std::vector<std::shared_ptr<T>>>>> listOpSubscribers;
+		std::vector<std::weak_ptr<SubscribeHandle<std::vector<T>>>> listOpSubscribers;
 
 		void notifySubscribers(std::shared_ptr<T> value, size_t index, ObservableActionType action)
 		{
@@ -486,7 +688,7 @@ namespace threadily {
 			auto it = this->listOpSubscribers.begin();
 			while (it != this->listOpSubscribers.end())
 			{
-				if (std::shared_ptr<SubscribeHandle<std::vector<std::shared_ptr<T>>>> subscriber = it->lock())
+				if (std::shared_ptr<SubscribeHandle<std::vector<T>>> subscriber = it->lock())
 				{
 					subscriber->runCallback(value, index, action);
 					++it;
@@ -568,16 +770,16 @@ namespace threadily {
 
 		std::shared_ptr<ISubscribeHandle> subscribe(std::function<void(std::shared_ptr<T> newValue, size_t index, ObservableActionType action)> handler)
 		{
-			std::shared_ptr<SubscribeHandle<std::vector<std::shared_ptr<T>>>> newSub = std::make_shared<SubscribeHandle<std::vector<std::shared_ptr<T>>>>(handler);
+			auto newSub = std::make_shared<SubscribeHandle<std::vector<T>>>(handler);
 			this->listOpSubscribers.push_back(newSub);
 
 			return newSub;
 		}
-
-		std::shared_ptr<ISubscribeHandle> subscribe(std::shared_ptr<ISubscribeHandleVectorCallback<std::shared_ptr<T>>> handler)
+		
+		std::shared_ptr<ISubscribeHandle> subscribe(ISubscribeHandleVectorCallback<T>* handler)
 		{
-			std::shared_ptr<SubscribeHandle<std::vector<std::shared_ptr<T>>>> newSub = std::make_shared<SubscribeHandle<std::vector<std::shared_ptr<T>>>>(handler);
-			this->subscribers.push_back(newSub);
+			auto newSub = std::make_shared<SubscribeHandle<std::vector<T>>>(handler);
+			this->listOpSubscribers.push_back(newSub);
 
 			return newSub;
 		}

@@ -2,12 +2,11 @@
 
 #include <ThreadObjectManager.h>
 
-#include "ExampleThreadObject.h"
-
 namespace threadily
 {
 	namespace test
 	{
+		// A subclass of a ThreadObjectManager which keeps track of how many objects were created during it's lifetime
 		template <typename T>
 		class CountingThreadObjectManager : public ThreadObjectManager<T>
 		{
@@ -27,7 +26,7 @@ namespace threadily
 				return ThreadObjectManager<T>::createObject(threadId, objectId);
 			}
 
-			unsigned int getCreatedCount()
+			unsigned int getCountOfObjectsCreated()
 			{
 				return this->counter;
 			}

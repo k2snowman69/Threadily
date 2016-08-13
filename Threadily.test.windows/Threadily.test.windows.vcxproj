@@ -172,6 +172,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="ThreadablesThreadObjectUnitTest.cpp" />
     <ClCompile Include="ThreadFactoryUnitTest.cpp" />
     <ClCompile Include="ThreadObjectManagerUnitTest.cpp" />
     <ClCompile Include="ThreadObjectUnitTest.cpp" />

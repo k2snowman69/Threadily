@@ -6,10 +6,9 @@
 #include "ThreadManager.h"
 #include "ThreadObjectManager.h"
 #include "ThreadObject.h"
-#include "ExampleThreadObject.h"
-#include "ObservableVectorPointerThreadObject.h"
+#include "PrimativesThreadObject.h"
 #include "ReadyEvent.h"
-#include "ParentThreadObject.h"
+#include "ThreadablesThreadObject.h"
 
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 
@@ -56,7 +55,7 @@ namespace threadily
 				threadManager->getOrCreateThread(ThreadIds::App, std::set<unsigned int>({ ThreadIds::UI }));
 				threadManager->getOrCreateThread(ThreadIds::UI);
 
-				auto threadObjectManager = std::make_shared<ThreadObjectManager<ExampleThreadObject>>(threadManager);
+				auto threadObjectManager = std::make_shared<ThreadObjectManager<PrimativesThreadObject>>(threadManager);
 				auto threadObject_UI = threadObjectManager->getOrCreateObject(ThreadIds::UI, 0);
 				auto threadObject_Service = threadObjectManager->getOrCreateObject(ThreadIds::Service, 0);
 
@@ -86,25 +85,25 @@ namespace threadily
 				threadManager->getOrCreateThread(ThreadIds::App, std::set<unsigned int>({ ThreadIds::UI }));
 				threadManager->getOrCreateThread(ThreadIds::UI);
 
-				auto threadObjectManager = std::make_shared<ThreadObjectManager<ObservableVectorPointerThreadObject>>(threadManager);
+				auto threadObjectManager = std::make_shared<ThreadObjectManager<PrimativesThreadObject>>(threadManager);
 				auto threadObject_UI = threadObjectManager->getOrCreateObject(ThreadIds::UI, 0);
 				auto threadObject_Service = threadObjectManager->getOrCreateObject(ThreadIds::Service, 0);
 
 				// set up a waiter until we get a notification on the UI thread that something has been completed
 				ReadyEvent e;
-				auto subscribeHandle = threadObject_UI->idList->subscribe([&e](int newValue, size_t index, ObservableActionType action)
+				auto subscribeHandle = threadObject_UI->intArray->subscribe([&e](int newValue, size_t index, ObservableActionType action)
 				{
 					e.finished();
 				});
 
-				threadObject_Service->idList->set(0, 17);
+				threadObject_Service->intArray->set(0, 17);
 				e.wait();
 
-				Assert::AreEqual((size_t)1, threadObject_Service->idList->size(), L"We directly added an element to service idList");
-				Assert::AreEqual((size_t)1, threadObject_UI->idList->size(), L"The service should have synced to the front end by now");
+				Assert::AreEqual((size_t)1, threadObject_Service->intArray->size(), L"We directly added an element to service idList");
+				Assert::AreEqual((size_t)1, threadObject_UI->intArray->size(), L"The service should have synced to the front end by now");
 
-				Assert::AreEqual(17, threadObject_Service->idList->at(0), L"We directly added an element to service idList");
-				Assert::AreEqual(17, threadObject_UI->idList->at(0), L"The service should have synced to the front end by now");
+				Assert::AreEqual(17, threadObject_Service->intArray->at(0), L"We directly added an element to service idList");
+				Assert::AreEqual(17, threadObject_UI->intArray->at(0), L"The service should have synced to the front end by now");
 			}
 			// sets up the threads like so:
 			// Service -> App -> UI
@@ -116,29 +115,28 @@ namespace threadily
 				threadManager->getOrCreateThread(ThreadIds::App, std::set<unsigned int>({ ThreadIds::UI }));
 				threadManager->getOrCreateThread(ThreadIds::UI);
 
-				auto threadObjectManager = std::make_shared<ThreadObjectManager<ParentThreadObject>>(threadManager);
-				auto childThreadObjectManager = std::make_shared<ThreadObjectManager<ExampleThreadObject>>(threadManager);
+				auto threadObjectManager = std::make_shared<ThreadObjectManager<ThreadablesThreadObject>>(threadManager);
+				auto childThreadObjectManager = std::make_shared<ThreadObjectManager<EmptyThreadObject>>(threadManager);
 				auto threadObject_UI = threadObjectManager->getOrCreateObject(ThreadIds::UI, 0);
 				auto threadObject_Service = threadObjectManager->getOrCreateObject(ThreadIds::Service, 0);
 
 				// set up a waiter until we get a notification on the UI thread that something has been completed
 				ReadyEvent e;
-				auto subscribeHandle = threadObject_UI->exampleObject->subscribe([&e](std::shared_ptr<ExampleThreadObject> newValue)
+				auto subscribeHandle = threadObject_UI->emptyObject->subscribe([&e](std::shared_ptr<EmptyThreadObject> newValue)
 				{
 					e.finished();
 				});
 
 				auto newChildObject = childThreadObjectManager->getOrCreateObject(ThreadIds::Service, 4);
-				newChildObject->name->set(L"new name");
-				threadObject_Service->exampleObject->set(newChildObject);
+				threadObject_Service->emptyObject->set(newChildObject);
 				e.wait();
 
-				Assert::IsTrue(nullptr != threadObject_UI->exampleObject->get(), L"Make sure the UI object was set");
-				Assert::IsTrue(ThreadIds::UI == threadObject_UI->exampleObject->get()->getThreadId(), L"Expected the example object to be running on the UI thread");
-				Assert::IsTrue(ThreadIds::Service == threadObject_Service->exampleObject->get()->getThreadId(), L"Expected the example object to be running on the Service thread");
-				Assert::AreEqual(threadObject_UI->exampleObject->get()->getId(), threadObject_Service->exampleObject->get()->getId(), L"Make sure they have the same value");
-				Assert::IsTrue(threadObject_UI->exampleObject->get().get() != threadObject_Service->exampleObject->get().get(), L"Make sure they are two distinct pointers");
-				Assert::AreEqual(threadObject_UI->exampleObject->get()->name->get(), threadObject_Service->exampleObject->get()->name->get(), L"Make sure they have the same name value");
+				Assert::IsTrue(nullptr != threadObject_UI->emptyObject->get(), L"Make sure the UI object was set");
+				Assert::IsTrue(ThreadIds::UI == threadObject_UI->emptyObject->get()->getThreadId(), L"Expected the example object to be running on the UI thread");
+				Assert::IsTrue(ThreadIds::Service == threadObject_Service->emptyObject->get()->getThreadId(), L"Expected the example object to be running on the Service thread");
+				Assert::AreEqual(threadObject_UI->emptyObject->get()->getId(), threadObject_Service->emptyObject->get()->getId(), L"Make sure they have the same value");
+				Assert::IsTrue(threadObject_UI->emptyObject->get().get() != threadObject_Service->emptyObject->get().get(), L"Make sure they are two distinct pointers");
+				Assert::AreEqual(threadObject_UI->emptyObject->get()->getId(), threadObject_Service->emptyObject->get()->getId(), L"Make sure they have the same id value");
 			}
 			// sets up the threads like so:
 			// Service -> App -> UI
@@ -150,32 +148,31 @@ namespace threadily
 				threadManager->getOrCreateThread(ThreadIds::App, std::set<unsigned int>({ ThreadIds::UI }));
 				threadManager->getOrCreateThread(ThreadIds::UI);
 
-				auto threadObjectManager = std::make_shared<ThreadObjectManager<ParentThreadObject>>(threadManager);
-				auto childThreadObjectManager = std::make_shared<ThreadObjectManager<ExampleThreadObject>>(threadManager);
+				auto threadObjectManager = std::make_shared<ThreadObjectManager<ThreadablesThreadObject>>(threadManager);
+				auto childThreadObjectManager = std::make_shared<ThreadObjectManager<EmptyThreadObject>>(threadManager);
 				auto threadObject_UI = threadObjectManager->getOrCreateObject(ThreadIds::UI, 0);
 				auto threadObject_Service = threadObjectManager->getOrCreateObject(ThreadIds::Service, 0);
 
 				// set up a waiter until we get a notification on the UI thread that something has been completed
 				ReadyEvent e;
-				auto subscribeHandle = threadObject_UI->exampleObjects->subscribe([&e](std::shared_ptr<ExampleThreadObject> newValue, size_t index, ObservableActionType action)
+				auto subscribeHandle = threadObject_UI->emptyObjectArray->subscribe([&e](std::shared_ptr<EmptyThreadObject> newValue, size_t index, ObservableActionType action)
 				{
 					e.finished();
 				});
 
-				auto sizeBefore = threadObject_UI->exampleObjects->size();
+				auto sizeBefore = threadObject_UI->emptyObjectArray->size();
 
 				auto newChildObject = childThreadObjectManager->getOrCreateObject(ThreadIds::Service, 4);
-				newChildObject->name->set(L"new name");
-				threadObject_Service->exampleObjects->insert(0, newChildObject);
+				threadObject_Service->emptyObjectArray->insert(0, newChildObject);
 				e.wait();
 
-				Assert::IsTrue(nullptr != threadObject_UI->exampleObjects->at(0), L"Make sure the UI object was set");
-				Assert::IsTrue(threadObject_UI->exampleObjects->size() == sizeBefore + 1, L"Expect example objects list to be size of 1");
-				Assert::IsTrue(ThreadIds::UI == threadObject_UI->exampleObjects->at(0)->getThreadId(), L"Expected the example object to be running on the UI thread");
-				Assert::IsTrue(ThreadIds::Service == threadObject_Service->exampleObjects->at(0)->getThreadId(), L"Expected the example object to be running on the Service thread");
-				Assert::AreEqual(threadObject_UI->exampleObjects->at(0)->getId(), threadObject_Service->exampleObjects->at(0)->getId(), L"Make sure they have the same value");
-				Assert::IsTrue(threadObject_UI->exampleObjects->at(0).get() != threadObject_Service->exampleObjects->at(0).get(), L"Make sure they are two distinct pointers");
-				Assert::AreEqual(threadObject_UI->exampleObjects->at(0)->name->get(), threadObject_Service->exampleObjects->at(0)->name->get(), L"Make sure they have the same name value");
+				Assert::IsTrue(nullptr != threadObject_UI->emptyObjectArray->at(0), L"Make sure the UI object was set");
+				Assert::IsTrue(threadObject_UI->emptyObjectArray->size() == sizeBefore + 1, L"Expect example objects list to be size of 1");
+				Assert::IsTrue(ThreadIds::UI == threadObject_UI->emptyObjectArray->at(0)->getThreadId(), L"Expected the example object to be running on the UI thread");
+				Assert::IsTrue(ThreadIds::Service == threadObject_Service->emptyObjectArray->at(0)->getThreadId(), L"Expected the example object to be running on the Service thread");
+				Assert::AreEqual(threadObject_UI->emptyObjectArray->at(0)->getId(), threadObject_Service->emptyObjectArray->at(0)->getId(), L"Make sure they have the same value");
+				Assert::IsTrue(threadObject_UI->emptyObjectArray->at(0).get() != threadObject_Service->emptyObjectArray->at(0).get(), L"Make sure they are two distinct pointers");
+				Assert::AreEqual(threadObject_UI->emptyObjectArray->at(0)->getId(), threadObject_Service->emptyObjectArray->at(0)->getId(), L"Make sure they have the same name value");
 			}
 		};
 	}
