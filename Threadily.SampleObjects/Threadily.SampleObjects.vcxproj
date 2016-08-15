@@ -80,26 +80,42 @@
     </ClCompile>
     <PostBuildEvent>
       <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">cd
-copy /Y *.h $(OutputPath).
-IF EXIST "C:\Program Files\Emscripten\emscripten\1.35.0\emcc" "C:\Program Files\Emscripten\emscripten\1.35.0\emcc" -std=c++11 EmptyThreadObject.cpp PrimativesThreadObject.cpp ThreadablesThreadObject.cpp -I "$(OutputPath)..\Threadily" -o $(OutputPath)$(TargetName).bc -Oz
+xcopy /s/Y *.h $(OutputPath).
+set LIST=
+SETLOCAL EnableDelayedExpansion 
+for /f %%i in ('dir /b /a /s *.cpp') do set LIST=!LIST! %%i
+IF EXIST "C:\Program Files\Emscripten\emscripten\1.35.0\emcc" "C:\Program Files\Emscripten\emscripten\1.35.0\emcc" -std=c++11 %LIST% -I "$(OutputPath)..\Threadily" -o $(OutputPath)$(TargetName).bc -Oz
+ENDLOCAL
 </Command>
     </PostBuildEvent>
     <PostBuildEvent>
       <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">cd
-copy /Y *.h $(OutputPath).
-IF EXIST "C:\Program Files\Emscripten\emscripten\1.35.0\emcc" "C:\Program Files\Emscripten\emscripten\1.35.0\emcc" -std=c++11 EmptyThreadObject.cpp PrimativesThreadObject.cpp ThreadablesThreadObject.cpp -I "$(OutputPath)..\Threadily" -o $(OutputPath)$(TargetName).bc -Oz
+xcopy /s/Y *.h $(OutputPath).
+set LIST=
+SETLOCAL EnableDelayedExpansion 
+for /f %%i in ('dir /b /a /s *.cpp') do set LIST=!LIST! %%i
+IF EXIST "C:\Program Files\Emscripten\emscripten\1.35.0\emcc" "C:\Program Files\Emscripten\emscripten\1.35.0\emcc" -std=c++11 %LIST% -I "$(OutputPath)..\Threadily" -o $(OutputPath)$(TargetName).bc -Oz
+ENDLOCAL
 </Command>
     </PostBuildEvent>
     <PostBuildEvent>
       <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">cd
-copy /Y *.h $(OutputPath).
-IF EXIST "C:\Program Files\Emscripten\emscripten\1.35.0\emcc" "C:\Program Files\Emscripten\emscripten\1.35.0\emcc" -std=c++11 EmptyThreadObject.cpp PrimativesThreadObject.cpp ThreadablesThreadObject.cpp -I "$(OutputPath)..\Threadily" -o $(OutputPath)$(TargetName).bc -Oz
+xcopy /s/Y *.h $(OutputPath).
+set LIST=
+SETLOCAL EnableDelayedExpansion 
+for /f %%i in ('dir /b /a /s *.cpp') do set LIST=!LIST! %%i
+IF EXIST "C:\Program Files\Emscripten\emscripten\1.35.0\emcc" "C:\Program Files\Emscripten\emscripten\1.35.0\emcc" -std=c++11 %LIST% -I "$(OutputPath)..\Threadily" -o $(OutputPath)$(TargetName).bc -Oz
+ENDLOCAL
 </Command>
     </PostBuildEvent>
     <PostBuildEvent>
       <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">cd
-copy /Y *.h $(OutputPath).
-IF EXIST "C:\Program Files\Emscripten\emscripten\1.35.0\emcc" "C:\Program Files\Emscripten\emscripten\1.35.0\emcc" -std=c++11 EmptyThreadObject.cpp PrimativesThreadObject.cpp ThreadablesThreadObject.cpp -I "$(OutputPath)..\Threadily" -o $(OutputPath)$(TargetName).bc -Oz
+xcopy /s/Y *.h $(OutputPath).
+set LIST=
+SETLOCAL EnableDelayedExpansion 
+for /f %%i in ('dir /b /a /s *.cpp') do set LIST=!LIST! %%i
+IF EXIST "C:\Program Files\Emscripten\emscripten\1.35.0\emcc" "C:\Program Files\Emscripten\emscripten\1.35.0\emcc" -std=c++11 %LIST% -I "$(OutputPath)..\Threadily" -o $(OutputPath)$(TargetName).bc -Oz
+ENDLOCAL
 </Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
