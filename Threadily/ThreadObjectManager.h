@@ -104,7 +104,7 @@ namespace threadily {
 #if !defined(EMSCRIPTEN) || defined(USE_PTHREADS)
 			std::lock_guard<std::mutex> lock(instances_m);
 #endif
-			return this->getObject(threadId, object->getId());
+			return this->getOrOptionallyCreateObject(threadId, object->getId(), true);
 		}
 
 		std::shared_ptr<T> getObject(unsigned int threadId, int id)
