@@ -174,6 +174,26 @@ namespace threadily
 				Assert::IsTrue(threadObject_UI->emptyObjectArray->at(0).get() != threadObject_Service->emptyObjectArray->at(0).get(), L"Make sure they are two distinct pointers");
 				Assert::AreEqual(threadObject_UI->emptyObjectArray->at(0)->getId(), threadObject_Service->emptyObjectArray->at(0)->getId(), L"Make sure they have the same name value");
 			}
+			// sets up the threads like so:
+			// Service -> App -> UI
+			// And checks to make sure the initial values of each object are the same
+			TEST_METHOD(ThreadObject_Observable_InitialDefaultValue)
+			{
+				auto threadManager = std::make_shared<ThreadManager>();
+				threadManager->getOrCreateThread(ThreadIds::Service, std::set<unsigned int>({ ThreadIds::App }));
+				threadManager->getOrCreateThread(ThreadIds::App, std::set<unsigned int>({ ThreadIds::UI }));
+				threadManager->getOrCreateThread(ThreadIds::UI);
+
+				auto threadObjectManager = std::make_shared<ThreadObjectManager<PrimativesThreadObject>>(threadManager);
+				auto threadObject_UI = threadObjectManager->getOrCreateObject(ThreadIds::UI, 0);
+				auto threadObject_Service = threadObjectManager->getOrCreateObject(ThreadIds::Service, 0);
+
+				Assert::AreEqual(threadObject_UI->intValue->get(), threadObject_Service->intValue->get(), L"UI and service have the same value");
+
+				auto threadObject_App = threadObjectManager->getOrCreateObject(ThreadIds::App, 0);
+
+				Assert::AreEqual(threadObject_UI->intValue->get(), threadObject_App->intValue->get(), L"UI and service have the same value");
+			}
 		};
 	}
 }

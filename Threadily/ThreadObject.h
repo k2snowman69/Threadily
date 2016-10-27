@@ -34,6 +34,7 @@ namespace threadily {
 		virtual std::shared_ptr<IThreadObjectManager> getObjectManager() override;
 		virtual unsigned int getThreadId() override;
 		virtual unsigned int getId() override;
+		static std::shared_ptr<ThreadObject> getReference(std::shared_ptr<ThreadObject>);
 		virtual std::vector<std::shared_ptr<IObservable>> getObservableProperties() override;
 	};
 

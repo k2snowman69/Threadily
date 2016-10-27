@@ -134,6 +134,11 @@ namespace threadily
 		this->disposeListeners->push_back(thingToNotify);
 	}
 
+	std::shared_ptr<ThreadObject> ThreadObject::getReference(std::shared_ptr<ThreadObject> value)
+	{
+		return value;
+	}
+
 #ifdef EMSCRIPTEN
 	EMSCRIPTEN_BINDINGS(ThreadObject) {
 		class_<IThreadObject>("IThreadObject")
@@ -141,9 +146,10 @@ namespace threadily
 			.function("getThreadId", &IThreadObject::getThreadId, pure_virtual())
 			.function("getId", &IThreadObject::getId, pure_virtual())
 			;
-		class_<ThreadObject>("ThreadObject")
+		class_<ThreadObject, base<threadily::IThreadObject>>("ThreadObject")
 			.constructor<std::shared_ptr<IThreadObjectManager>, unsigned int, unsigned int>()
 			.smart_ptr<std::shared_ptr<ThreadObject>>("ThreadObject")
+			.class_function("getReference", &ThreadObject::getReference)
 			;
 	}
 #endif

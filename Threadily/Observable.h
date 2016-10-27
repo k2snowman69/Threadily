@@ -222,7 +222,11 @@ namespace threadily {
 		T value;
 		std::vector<std::weak_ptr<SubscribeHandle<T>>> subscribers;
 	public:
-		Observable() {};
+		Observable()
+		{
+			value = T();
+			this->subscribers = std::vector<std::weak_ptr<SubscribeHandle<T>>>();
+		};
 
 		T get()
 		{
@@ -331,6 +335,8 @@ namespace threadily {
 		Observable(unsigned int threadId)
 		{
 			this->threadId = threadId;
+			this->value = nullptr;
+			this->subscribers = std::vector<std::weak_ptr<SubscribeHandle<T>>>();
 		};
 
 		std::shared_ptr<T> get()
@@ -564,6 +570,12 @@ namespace threadily {
 			}
 		}
 	public:
+		Observable()
+		{
+			this->value = std::vector<T>();
+			this->listOpSubscribers = std::vector<std::weak_ptr<SubscribeHandle<std::vector<T>>>>();
+		}
+
 		size_t size()
 		{
 			return this->value.size();
@@ -703,6 +715,8 @@ namespace threadily {
 		Observable(unsigned int threadId)
 		{
 			this->threadId = threadId;
+			this->value = std::vector<std::shared_ptr<T>>();
+			this->listOpSubscribers = std::vector<std::weak_ptr<SubscribeHandle<std::vector<T>>>>();
 		};
 
 		size_t size()
