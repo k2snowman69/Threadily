@@ -72,6 +72,8 @@ namespace threadily
 
 				threadObject_Service->name->set(L"hi!");
 				e.wait();
+
+				threadObject_UI->name->unsubscribe(subscribeHandle);
 			}
 			// sets up the threads like so:
 			// Service -> App -> UI
@@ -104,6 +106,8 @@ namespace threadily
 
 				Assert::AreEqual(17, threadObject_Service->intArray->at(0), L"We directly added an element to service idList");
 				Assert::AreEqual(17, threadObject_UI->intArray->at(0), L"The service should have synced to the front end by now");
+
+				threadObject_UI->intArray->unsubscribe(subscribeHandle);
 			}
 			// sets up the threads like so:
 			// Service -> App -> UI
@@ -137,6 +141,8 @@ namespace threadily
 				Assert::AreEqual(threadObject_UI->emptyObject->get()->getId(), threadObject_Service->emptyObject->get()->getId(), L"Make sure they have the same value");
 				Assert::IsTrue(threadObject_UI->emptyObject->get().get() != threadObject_Service->emptyObject->get().get(), L"Make sure they are two distinct pointers");
 				Assert::AreEqual(threadObject_UI->emptyObject->get()->getId(), threadObject_Service->emptyObject->get()->getId(), L"Make sure they have the same id value");
+
+				threadObject_UI->emptyObject->unsubscribe(subscribeHandle);
 			}
 			// sets up the threads like so:
 			// Service -> App -> UI

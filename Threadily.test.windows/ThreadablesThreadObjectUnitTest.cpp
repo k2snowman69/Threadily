@@ -40,6 +40,8 @@ namespace threadily
 
 				Assert::IsNull(obj_UI->emptyObject->get().get());
 				obj_Service->emptyObject->set(emptyObject);
+
+				obj_UI->emptyObject->unsubscribe(handler);
 			}
 		};
 	}

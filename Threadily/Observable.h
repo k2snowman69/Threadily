@@ -276,7 +276,13 @@ namespace threadily {
 		{
 			for (auto it = this->subscribers.begin(); it != this->subscribers.end(); ++it)
 			{
-				if (it == handleToRemove)
+				if (it->expired())
+				{
+					this->subscribers.erase(it);
+				}
+
+				auto d = it->lock();
+				if (d == handleToRemove)
 				{
 					this->subscribers.erase(it);
 					break;
@@ -395,7 +401,7 @@ namespace threadily {
 			{
 				if (it->expired())
 				{
-					continue;
+					this->subscribers.erase(it);
 				}
 
 				auto d = it->lock();
@@ -645,7 +651,13 @@ namespace threadily {
 		{
 			for (auto it = this->listOpSubscribers.begin(); it != this->listOpSubscribers.end(); ++it)
 			{
-				if (it == handleToRemove)
+				if (it->expired())
+				{
+					this->listOpSubscribers.erase(it);
+				}
+
+				auto d = it->lock();
+				if (d == handleToRemove)
 				{
 					this->listOpSubscribers.erase(it);
 					break;
@@ -801,19 +813,18 @@ namespace threadily {
 
 		void unsubscribe(std::shared_ptr<ISubscribeHandle> handleToRemove)
 		{
-			// go through all handlers, if we couldn't get a lock, queue that handle for removal
-			auto it = this->listOpSubscribers.begin();
-			while (it != this->listOpSubscribers.end())
+			for (auto it = this->listOpSubscribers.begin(); it != this->listOpSubscribers.end(); ++it)
 			{
-				std::shared_ptr<ISubscribeHandle> subscriber = it->lock();
-				if (subscriber != nullptr &&
-					handleToRemove != subscriber)
+				if (it->expired())
 				{
-					++it;
+					this->listOpSubscribers.erase(it);
 				}
-				else
+
+				auto d = it->lock();
+				if (d == handleToRemove)
 				{
-					it = this->listOpSubscribers.erase(it);
+					this->listOpSubscribers.erase(it);
+					break;
 				}
 			}
 		}
