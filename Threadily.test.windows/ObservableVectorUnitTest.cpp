@@ -146,6 +146,8 @@ namespace threadily
 				observableVector.insert(2, valueAdded);
 
 				Assert::AreEqual((size_t)3, observableVector.size(), L"Expect values in the array"); // 1 real, 2 empty
+
+				observableVector.unsubscribe(subscribe);
 			}
 
 			TEST_METHOD(Observable_Vector_Ptr_Subscription_Remove)
@@ -175,6 +177,8 @@ namespace threadily
 
 				Assert::AreEqual((size_t)2, observableVector.size(), L"Expect values in the array");
 				Assert::IsTrue(isDeleted);
+
+				observableVector.unsubscribe(subscribe);
 			}
 
 			TEST_METHOD(Observable_Vector_Ptr_Subscription_Update)
@@ -206,6 +210,8 @@ namespace threadily
 
 				Assert::AreEqual((size_t)3, observableVector.size(), L"Expect values in the array");
 				Assert::IsTrue(isUpdated);
+
+				observableVector.unsubscribe(subscribe);
 			}
 		};
 	}

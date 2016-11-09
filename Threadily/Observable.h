@@ -798,17 +798,26 @@ namespace threadily {
 			return newSub;
 		}
 
+
 		void unsubscribe(std::shared_ptr<ISubscribeHandle> handleToRemove)
 		{
-			for (auto it = this->listOpSubscribers.begin(); it != this->listOpSubscribers.end(); ++it)
+			// go through all handlers, if we couldn't get a lock, queue that handle for removal
+			auto it = this->listOpSubscribers.begin();
+			while (it != this->listOpSubscribers.end())
 			{
-				if (it == handleToRemove)
+				std::shared_ptr<ISubscribeHandle> subscriber = it->lock();
+				if (subscriber != nullptr &&
+					handleToRemove != subscriber)
 				{
-					this->listOpSubscribers.erase(it);
-					break;
+					++it;
+				}
+				else
+				{
+					it = this->listOpSubscribers.erase(it);
 				}
 			}
 		}
+
 		virtual std::shared_ptr<ISubscribeHandle> subscribe(std::shared_ptr<IThreadQueueItemManager> thread, std::shared_ptr<IObservable> other) override
 		{
 			auto thingToNotify = std::dynamic_pointer_cast<Observable<std::vector<T>>>(other);

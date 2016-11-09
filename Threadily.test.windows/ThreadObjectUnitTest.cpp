@@ -173,6 +173,8 @@ namespace threadily
 				Assert::AreEqual(threadObject_UI->emptyObjectArray->at(0)->getId(), threadObject_Service->emptyObjectArray->at(0)->getId(), L"Make sure they have the same value");
 				Assert::IsTrue(threadObject_UI->emptyObjectArray->at(0).get() != threadObject_Service->emptyObjectArray->at(0).get(), L"Make sure they are two distinct pointers");
 				Assert::AreEqual(threadObject_UI->emptyObjectArray->at(0)->getId(), threadObject_Service->emptyObjectArray->at(0)->getId(), L"Make sure they have the same name value");
+
+				threadObject_UI->emptyObjectArray->unsubscribe(subscribeHandle);
 			}
 			// sets up the threads like so:
 			// Service -> App -> UI
