@@ -72,6 +72,28 @@ namespace threadily
 		return this->objectManager;
 	}
 
+	void ThreadObject::runOnPeer(unsigned int threadId, std::function<void(std::shared_ptr<IThreadObject> peer)> toExecute)
+	{
+		if (this->getThreadId() != threadId)
+		{
+			// if we can't get a lock on the object manager, it means this class is being destroyed
+			auto objectManager = this->getObjectManager().lock();
+			if (objectManager == nullptr)
+			{
+				return;
+			}
+			auto peer = objectManager->getPeer(threadId, this->shared_from_this());
+			objectManager->getThreadManager()->getOrCreateThread(threadId)->addWork(std::make_shared<threadily::ThreadQueueItem>([peer, toExecute]() {
+				toExecute(peer);
+			}));
+			return;
+		}
+		else
+		{
+			toExecute(this->shared_from_this());
+		}
+	}
+
 	std::vector<std::shared_ptr<IObservable>> ThreadObject::getObservableProperties()
 	{
 		return std::vector<std::shared_ptr<IObservable>>();

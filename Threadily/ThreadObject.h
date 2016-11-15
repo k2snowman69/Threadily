@@ -36,6 +36,7 @@ namespace threadily {
 		virtual unsigned int getId() override;
 		static std::shared_ptr<ThreadObject> getReference(std::shared_ptr<ThreadObject>);
 		virtual std::vector<std::shared_ptr<IObservable>> getObservableProperties() override;
+		virtual void runOnPeer(unsigned int threadId, std::function<void(std::shared_ptr<IThreadObject> peer)> toExecute) override;
 	};
 
 }
