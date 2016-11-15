@@ -67,9 +67,9 @@ namespace threadily
 	{
 		return this->id;
 	}
-	std::shared_ptr<IThreadObjectManager> ThreadObject::getObjectManager()
+	std::weak_ptr<IThreadObjectManager> ThreadObject::getObjectManager()
 	{
-		return this->objectManager.lock();
+		return this->objectManager;
 	}
 
 	std::vector<std::shared_ptr<IObservable>> ThreadObject::getObservableProperties()

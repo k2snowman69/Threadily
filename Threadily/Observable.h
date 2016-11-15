@@ -355,7 +355,13 @@ namespace threadily {
 			// if newValue was set on a different thread, we need to get this threads version of that object
 			if (newValue != nullptr && newValue->getThreadId() != this->threadId)
 			{
-				std::shared_ptr<IThreadObject> peerObject = newValue->getObjectManager()->getPeer(this->threadId, newValue);
+				auto objectManager = newValue->getObjectManager().lock();
+				if (objectManager == nullptr)
+				{
+					// if the object manager is null, all will be destroyed soon so no need to set the value
+					return;
+				}
+				std::shared_ptr<IThreadObject> peerObject = objectManager->getPeer(this->threadId, newValue);
 				newValue = std::static_pointer_cast<T>(peerObject);
 			}
 			if (this->value != newValue)
@@ -746,7 +752,13 @@ namespace threadily {
 			// if value was set on a different thread, we need to get this threads version of that object
 			if (value != nullptr && value->getThreadId() != this->threadId)
 			{
-				std::shared_ptr<IThreadObject> peerObject = value->getObjectManager()->getPeer(this->threadId, value);
+				auto objectManager = value->getObjectManager().lock();
+				if (objectManager == nullptr)
+				{
+					// if the object manager is null, all will be destroyed soon so no need to set the value
+					return;
+				}
+				std::shared_ptr<IThreadObject> peerObject = objectManager->getPeer(this->threadId, value);
 				value = std::static_pointer_cast<T>(peerObject);
 			}
 
@@ -766,7 +778,13 @@ namespace threadily {
 			// if value was set on a different thread, we need to get this threads version of that object
 			if (value != nullptr && value->getThreadId() != this->threadId)
 			{
-				std::shared_ptr<IThreadObject> peerObject = value->getObjectManager()->getPeer(this->threadId, value);
+				auto objectManager = value->getObjectManager().lock();
+				if (objectManager == nullptr)
+				{
+					// if the object manager is null, all will be destroyed soon so no need to set the value
+					return;
+				}
+				std::shared_ptr<IThreadObject> peerObject = objectManager->getPeer(this->threadId, value);
 				value = std::static_pointer_cast<T>(peerObject);
 			}
 
