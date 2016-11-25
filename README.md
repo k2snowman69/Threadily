@@ -107,8 +107,17 @@ Now, depending on what design you are using (e.g. Flux, Redux, or something else
 ```
 UserDetails::StartLoad()
 {
-	this->getObjectManager()->getThreadManager()->getOrCreateThread(ThreadIds::Service)->addWork(std::make_shared<threadily::ThreadQueueItem>([this]() {
-		auto userDetails_service = userDetailsThreadObjectManager->getOrCreateObject(ThreadIds::Service, this->getId());
+	// if we aren't on the service thread, just push the work to that thread
+    if (this->getThreadId() != ThreadIds::Service)
+	{
+		this->runOnPeer(ThreadIds::Service, [](std::shared_ptr<IThreadObject> sibling) {
+			auto serviceObject = std::static_pointer_cast<UserDetails>(sibling);
+			sericeObject->StartLoad();
+		});
+	}
+	// else do the actual network call
+	else 
+	{
 		Network.ajax(...)
 			.done([&userDetails_service](response)
 			{
@@ -116,7 +125,7 @@ UserDetails::StartLoad()
 				userDetails_service->lastName->set(response.lastName);
 				userDetails_service->emailAddress->set(response.emailAddress);
 			};
-	}));
+	}
 }
 ```
 As you can see, in our callback function, we are setting the properties on the UserDetails on the Service Thread. This `set(...)` automatically fires a notification to the Storage Thread for it to update it's property which does the same to the UI Thread.
