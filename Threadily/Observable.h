@@ -239,9 +239,12 @@ namespace threadily {
 			{
 				this->value = newValue;
 
+				// make a copy so we don't edit the original while iterating
+				auto copy = this->subscribers;
+
 				// notify all handlers, if we couldn't get a lock, queue that handle for removal
-				auto it = this->subscribers.begin();
-				while (it != this->subscribers.end())
+				auto it = copy.begin();
+				while (it != copy.end())
 				{
 					if (std::shared_ptr<SubscribeHandle<T>> subscriber = it->lock())
 					{
@@ -250,9 +253,11 @@ namespace threadily {
 					}
 					else
 					{
-						it = this->subscribers.erase(it);
+						it = copy.erase(it);
 					}
 				}
+
+				this->subscribers = copy;
 			}
 		}
 
@@ -274,27 +279,35 @@ namespace threadily {
 
 		void unsubscribe(std::shared_ptr<ISubscribeHandle> handleToRemove)
 		{
-			for (auto it = this->subscribers.begin(); it != this->subscribers.end(); ++it)
+			// make a copy so we don't edit the original while iterating
+			auto copy = this->subscribers;
+
+			for (auto it = copy.begin(); it != copy.end(); ++it)
 			{
 				if (it->expired())
 				{
-					this->subscribers.erase(it);
+					copy.erase(it);
 				}
 
 				auto d = it->lock();
 				if (d == handleToRemove)
 				{
-					this->subscribers.erase(it);
+					copy.erase(it);
 					break;
 				}
 			}
+
+			this->subscribers = copy;
 		}
 
 		size_t getSubscribersCount()
 		{
+			// make a copy so we don't edit the original while iterating
+			auto copy = this->subscribers;
+
 			// clear out expired functions
-			auto it = this->subscribers.begin();
-			while (it != this->subscribers.end())
+			auto it = copy.begin();
+			while (it != copy.end())
 			{
 				if (std::shared_ptr<SubscribeHandle<T>> subscriber = it->lock())
 				{
@@ -302,9 +315,11 @@ namespace threadily {
 				}
 				else
 				{
-					it = this->subscribers.erase(it);
+					it = copy.erase(it);
 				}
 			}
+
+			this->subscribers = copy;
 
 			// return final size
 			return this->subscribers.size();
@@ -368,9 +383,12 @@ namespace threadily {
 			{
 				this->value = newValue;
 
+				// make a copy so we don't edit the original while iterating
+				auto copy = this->subscribers;
+
 				// notify all handlers, if we couldn't get a lock, queue that handle for removal
-				auto it = this->subscribers.begin();
-				while (it != this->subscribers.end())
+				auto it = copy.begin();
+				while (it != copy.end())
 				{
 					if (std::shared_ptr<SubscribeHandle<T>> subscriber = it->lock())
 					{
@@ -379,9 +397,11 @@ namespace threadily {
 					}
 					else
 					{
-						it = this->subscribers.erase(it);
+						it = copy.erase(it);
 					}
 				}
+
+				this->subscribers = copy;
 			}
 		}
 
@@ -403,27 +423,35 @@ namespace threadily {
 
 		void unsubscribe(std::shared_ptr<ISubscribeHandle> handleToRemove)
 		{
-			for (auto it = this->subscribers.begin(); it != this->subscribers.end(); ++it)
+			// make a copy so we don't edit the original while iterating
+			auto copy = this->subscribers;
+
+			for (auto it = copy.begin(); it != copy.end(); ++it)
 			{
 				if (it->expired())
 				{
-					this->subscribers.erase(it);
+					copy.erase(it);
 				}
 
 				auto d = it->lock();
 				if (d == handleToRemove)
 				{
-					this->subscribers.erase(it);
+					copy.erase(it);
 					break;
 				}
 			}
+
+			this->subscribers = copy;
 		}
 
 		size_t getSubscribersCount()
 		{
+			// make a copy so we don't edit the original while iterating
+			auto copy = this->subscribers;
+
 			// clear out expired functions
-			auto it = this->subscribers.begin();
-			while (it != this->subscribers.end())
+			auto it = copy.begin();
+			while (it != copy.end())
 			{
 				if (std::shared_ptr<SubscribeHandle<T>> subscriber = it->lock())
 				{
@@ -431,9 +459,11 @@ namespace threadily {
 				}
 				else
 				{
-					it = this->subscribers.erase(it);
+					it = copy.erase(it);
 				}
 			}
+
+			this->subscribers = copy;
 
 			// return final size
 			return this->subscribers.size();
@@ -562,13 +592,16 @@ namespace threadily {
 	{
 	private:
 		std::vector<T> value;
-		std::vector<std::weak_ptr<SubscribeHandle<std::vector<T>>>> listOpSubscribers;
+		std::vector<std::weak_ptr<SubscribeHandle<std::vector<T>>>> subscribers;
 
 		void notifySubscribers(T value, size_t index, ObservableActionType action)
 		{
+			// make a copy so we don't edit the original while iterating
+			auto copy = this->subscribers;
+
 			// notify all handlers, if we couldn't get a lock, queue that handle for removal
-			auto it = this->listOpSubscribers.begin();
-			while (it != this->listOpSubscribers.end())
+			auto it = copy.begin();
+			while (it != copy.end())
 			{
 				if (std::shared_ptr<SubscribeHandle<std::vector<T>>> subscriber = it->lock())
 				{
@@ -577,15 +610,17 @@ namespace threadily {
 				}
 				else
 				{
-					it = this->listOpSubscribers.erase(it);
+					it = copy.erase(it);
 				}
 			}
+
+			this->subscribers = copy;
 		}
 	public:
 		Observable()
 		{
 			this->value = std::vector<T>();
-			this->listOpSubscribers = std::vector<std::weak_ptr<SubscribeHandle<std::vector<T>>>>();
+			this->subscribers = std::vector<std::weak_ptr<SubscribeHandle<std::vector<T>>>>();
 		}
 
 		size_t size()
@@ -640,7 +675,7 @@ namespace threadily {
 		std::shared_ptr<ISubscribeHandle> subscribe(std::function<void(T newValue, size_t index, ObservableActionType action)> handler)
 		{
 			std::shared_ptr<SubscribeHandle<std::vector<T>>> newSub = std::make_shared<SubscribeHandle<std::vector<T>>>(handler);
-			this->listOpSubscribers.push_back(newSub);
+			this->subscribers.push_back(newSub);
 
 			return newSub;
 		}
@@ -648,27 +683,32 @@ namespace threadily {
 		std::shared_ptr<ISubscribeHandle> subscribe(ISubscribeHandleVectorCallback<T>* handler)
 		{
 			std::shared_ptr<SubscribeHandle<std::vector<T>>> newSub = std::make_shared<SubscribeHandle<std::vector<T>>>(handler);
-			this->listOpSubscribers.push_back(newSub);
+			this->subscribers.push_back(newSub);
 
 			return newSub;
 		}
 
 		void unsubscribe(std::shared_ptr<ISubscribeHandle> handleToRemove)
 		{
-			for (auto it = this->listOpSubscribers.begin(); it != this->listOpSubscribers.end(); ++it)
+			// make a copy so we don't edit the original while iterating
+			auto copy = this->subscribers;
+
+			for (auto it = copy.begin(); it != copy.end(); ++it)
 			{
 				if (it->expired())
 				{
-					this->listOpSubscribers.erase(it);
+					copy.erase(it);
 				}
 
 				auto d = it->lock();
 				if (d == handleToRemove)
 				{
-					this->listOpSubscribers.erase(it);
+					copy.erase(it);
 					break;
 				}
 			}
+
+			this->subscribers = copy;
 		}
 		virtual std::shared_ptr<ISubscribeHandle> subscribe(std::shared_ptr<IThreadQueueItemManager> thread, std::shared_ptr<IObservable> other) override
 		{
@@ -710,13 +750,16 @@ namespace threadily {
 	private:
 		unsigned int threadId;
 		std::vector<std::shared_ptr<T>> value;
-		std::vector<std::weak_ptr<SubscribeHandle<std::vector<T>>>> listOpSubscribers;
+		std::vector<std::weak_ptr<SubscribeHandle<std::vector<T>>>> subscribers;
 
 		void notifySubscribers(std::shared_ptr<T> value, size_t index, ObservableActionType action)
 		{
+			// make a copy so we don't edit the original while iterating
+			auto copy = this->subscribers;
+
 			// notify all handlers, if we couldn't get a lock, queue that handle for removal
-			auto it = this->listOpSubscribers.begin();
-			while (it != this->listOpSubscribers.end())
+			auto it = copy.begin();
+			while (it != copy.end())
 			{
 				if (std::shared_ptr<SubscribeHandle<std::vector<T>>> subscriber = it->lock())
 				{
@@ -725,16 +768,18 @@ namespace threadily {
 				}
 				else
 				{
-					it = this->listOpSubscribers.erase(it);
+					it = copy.erase(it);
 				}
 			}
+
+			this->subscribers = copy;
 		}
 	public:
 		Observable(unsigned int threadId)
 		{
 			this->threadId = threadId;
 			this->value = std::vector<std::shared_ptr<T>>();
-			this->listOpSubscribers = std::vector<std::weak_ptr<SubscribeHandle<std::vector<T>>>>();
+			this->subscribers = std::vector<std::weak_ptr<SubscribeHandle<std::vector<T>>>>();
 		};
 
 		size_t size()
@@ -815,7 +860,7 @@ namespace threadily {
 		std::shared_ptr<ISubscribeHandle> subscribe(std::function<void(std::shared_ptr<T> newValue, size_t index, ObservableActionType action)> handler)
 		{
 			auto newSub = std::make_shared<SubscribeHandle<std::vector<T>>>(handler);
-			this->listOpSubscribers.push_back(newSub);
+			this->subscribers.push_back(newSub);
 
 			return newSub;
 		}
@@ -823,7 +868,7 @@ namespace threadily {
 		std::shared_ptr<ISubscribeHandle> subscribe(ISubscribeHandleVectorCallback<T>* handler)
 		{
 			auto newSub = std::make_shared<SubscribeHandle<std::vector<T>>>(handler);
-			this->listOpSubscribers.push_back(newSub);
+			this->subscribers.push_back(newSub);
 
 			return newSub;
 		}
@@ -831,20 +876,25 @@ namespace threadily {
 
 		void unsubscribe(std::shared_ptr<ISubscribeHandle> handleToRemove)
 		{
-			for (auto it = this->listOpSubscribers.begin(); it != this->listOpSubscribers.end(); ++it)
+			// make a copy so we don't edit the original while iterating
+			auto copy = this->subscribers;
+
+			for (auto it = copy.begin(); it != copy.end(); ++it)
 			{
 				if (it->expired())
 				{
-					this->listOpSubscribers.erase(it);
+					copy.erase(it);
 				}
 
 				auto d = it->lock();
 				if (d == handleToRemove)
 				{
-					this->listOpSubscribers.erase(it);
+					copy.erase(it);
 					break;
 				}
 			}
+
+			this->subscribers = copy;
 		}
 
 		virtual std::shared_ptr<ISubscribeHandle> subscribe(std::shared_ptr<IThreadQueueItemManager> thread, std::shared_ptr<IObservable> other) override

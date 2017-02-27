@@ -164,6 +164,7 @@
     <ClInclude Include="ThreadIds.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="ObservableUnitTest.cpp" />
     <ClCompile Include="ObservableVectorUnitTest.cpp" />
     <ClCompile Include="ReadyEventUnitTest.cpp" />
     <ClCompile Include="stdafx.cpp">

@@ -77,7 +77,7 @@
     </ClCompile>
     <PostBuildEvent>
       <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">cd
-xcopy /s/Y *.h $(OutputPath).
+xcopy *.h $(OutputPath).   /E /C /R /H /I /K /Y
 set LIST=
 SETLOCAL EnableDelayedExpansion 
 for /f %%i in ('dir /b /a /s *.cpp') do set LIST=!LIST! %%i
@@ -87,7 +87,7 @@ ENDLOCAL
     </PostBuildEvent>
     <PostBuildEvent>
       <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">cd
-xcopy /s/Y *.h $(OutputPath).
+xcopy *.h $(OutputPath).   /E /C /R /H /I /K /Y
 set LIST=
 SETLOCAL EnableDelayedExpansion 
 for /f %%i in ('dir /b /a /s *.cpp') do set LIST=!LIST! %%i
@@ -97,7 +97,7 @@ ENDLOCAL
     </PostBuildEvent>
     <PostBuildEvent>
       <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">cd
-xcopy /s/Y *.h $(OutputPath).
+xcopy *.h $(OutputPath).   /E /C /R /H /I /K /Y
 set LIST=
 SETLOCAL EnableDelayedExpansion 
 for /f %%i in ('dir /b /a /s *.cpp') do set LIST=!LIST! %%i
@@ -107,7 +107,7 @@ ENDLOCAL
     </PostBuildEvent>
     <PostBuildEvent>
       <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">cd
-xcopy /s/Y *.h $(OutputPath).
+xcopy *.h $(OutputPath).   /E /C /R /H /I /K /Y
 set LIST=
 SETLOCAL EnableDelayedExpansion 
 for /f %%i in ('dir /b /a /s *.cpp') do set LIST=!LIST! %%i

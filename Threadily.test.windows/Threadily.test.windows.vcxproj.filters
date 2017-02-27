@@ -47,5 +47,8 @@
     <ClCompile Include="ThreadablesThreadObjectUnitTest.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="ObservableUnitTest.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>
