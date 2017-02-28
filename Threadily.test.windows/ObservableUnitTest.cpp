@@ -50,6 +50,38 @@ namespace threadily
 
 				Assert::AreEqual(5, observable.get(), L"Expect set value");
 			}
+			TEST_METHOD(Observable_Int_SubscriptionBug_AddDuringSubscribe)
+			{
+				auto observable = Observable<int>();
+				Assert::AreEqual(0, observable.get(), L"Expect default value");
+
+				threadily::ReadyEvent r1, r2, r3;
+
+				bool r4Hit = false;
+
+				std::shared_ptr<threadily::ISubscribeHandle> subscription3;
+				auto subscription = observable.subscribe([&r1](int newValue) {
+					r1.finished();
+				});
+				auto subscription1 = observable.subscribe([&observable, &subscription, &r2, &r4Hit, &subscription3](int newValue) {
+					subscription3 = observable.subscribe([&r4Hit](int newValue) {
+						r4Hit = true;
+					});
+					r2.finished();
+				});
+				auto subscription2 = observable.subscribe([&r3](int newValue) {
+					r3.finished();
+				});
+
+				observable.set(5);
+				r1.wait();
+				r2.wait();
+				r3.wait();
+				
+				Assert::IsFalse(r4Hit, L"R4 should not be hit since it was added in the middle of this event loop");
+
+				Assert::AreEqual(5, observable.get(), L"Expect set value");
+			}
 			TEST_METHOD(Observable_Ptr_Int_Insert_1)
 			{
 				auto observable = Observable<std::shared_ptr<int>>();

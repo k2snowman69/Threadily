@@ -4,6 +4,7 @@
 #include <memory>
 #include <stdexcept>
 #include <functional>
+#include <mutex>
 
 #include "IObservable.h"
 #include "IThreadObjectManager.h"
@@ -221,12 +222,19 @@ namespace threadily {
 	private:
 		T value;
 		std::vector<std::weak_ptr<SubscribeHandle<T>>> subscribers;
+		std::recursive_mutex subscribers_mutex;
+
 	public:
 		Observable()
 		{
 			value = T();
 			this->subscribers = std::vector<std::weak_ptr<SubscribeHandle<T>>>();
 		};
+		Observable(const Observable &c)
+		{
+			value = c.value;
+			subscribers = c.subscribers;
+		}
 
 		T get()
 		{
@@ -239,7 +247,7 @@ namespace threadily {
 			{
 				this->value = newValue;
 
-				// make a copy so we don't edit the original while iterating
+				// create a copy of the subscribers
 				auto copy = this->subscribers;
 
 				// notify all handlers, if we couldn't get a lock, queue that handle for removal
@@ -249,20 +257,16 @@ namespace threadily {
 					if (std::shared_ptr<SubscribeHandle<T>> subscriber = it->lock())
 					{
 						subscriber->runCallback(newValue);
-						++it;
 					}
-					else
-					{
-						it = copy.erase(it);
-					}
+					++it;
 				}
-
-				this->subscribers = copy;
 			}
 		}
 
 		std::shared_ptr<ISubscribeHandle> subscribe(std::function<void(T newValue)> handler)
 		{
+			std::lock_guard<std::recursive_mutex> lock(subscribers_mutex);
+
 			std::shared_ptr<SubscribeHandle<T>> newSub = std::make_shared<SubscribeHandle<T>>(handler);
 			this->subscribers.push_back(newSub);
 
@@ -271,6 +275,8 @@ namespace threadily {
 
 		std::shared_ptr<ISubscribeHandle> subscribe(ISubscribeHandleCallback<T>* handler)
 		{
+			std::lock_guard<std::recursive_mutex> lock(subscribers_mutex);
+
 			std::shared_ptr<SubscribeHandle<T>> newSub = std::make_shared<SubscribeHandle<T>>(handler);
 			this->subscribers.push_back(newSub);
 
@@ -279,35 +285,34 @@ namespace threadily {
 
 		void unsubscribe(std::shared_ptr<ISubscribeHandle> handleToRemove)
 		{
-			// make a copy so we don't edit the original while iterating
-			auto copy = this->subscribers;
+			std::lock_guard<std::recursive_mutex> lock(subscribers_mutex);
 
-			for (auto it = copy.begin(); it != copy.end(); ++it)
+			for (auto it = this->subscribers.begin(); it != this->subscribers.end();)
 			{
 				if (it->expired())
 				{
-					copy.erase(it);
+					it = this->subscribers.erase(it);
+					continue;
 				}
 
 				auto d = it->lock();
 				if (d == handleToRemove)
 				{
-					copy.erase(it);
-					break;
+					it = this->subscribers.erase(it);
+					continue;
 				}
-			}
 
-			this->subscribers = copy;
+				++it;
+			}
 		}
 
 		size_t getSubscribersCount()
 		{
-			// make a copy so we don't edit the original while iterating
-			auto copy = this->subscribers;
+			std::lock_guard<std::recursive_mutex> lock(subscribers_mutex);
 
 			// clear out expired functions
-			auto it = copy.begin();
-			while (it != copy.end())
+			auto it = this->subscribers.begin();
+			while (it != this->subscribers.end())
 			{
 				if (std::shared_ptr<SubscribeHandle<T>> subscriber = it->lock())
 				{
@@ -315,11 +320,9 @@ namespace threadily {
 				}
 				else
 				{
-					it = copy.erase(it);
+					it = this->subscribers.erase(it);
 				}
 			}
-
-			this->subscribers = copy;
 
 			// return final size
 			return this->subscribers.size();
@@ -333,10 +336,8 @@ namespace threadily {
 				throw std::runtime_error("Current variable type and argument 'other' type are not the same. Cannot create a notification link between the two variables.");
 			}
 
-			std::function<void(T newValue)> handler = [thread, thingToNotify](T newValue)
-			{
-				thread->addWork(std::make_shared<ThreadQueueItem>([thingToNotify, newValue]()
-				{
+			std::function<void(T newValue)> handler = [thread, thingToNotify](T newValue) {
+				thread->addWork(std::make_shared<ThreadQueueItem>([thingToNotify, newValue]() {
 					thingToNotify->set(newValue);
 				}));
 			};
@@ -352,6 +353,8 @@ namespace threadily {
 		unsigned int threadId;
 		std::shared_ptr<T> value;
 		std::vector<std::weak_ptr<SubscribeHandle<T>>> subscribers;
+		std::recursive_mutex subscribers_mutex;
+
 	public:
 		Observable(unsigned int threadId)
 		{
@@ -359,6 +362,12 @@ namespace threadily {
 			this->value = nullptr;
 			this->subscribers = std::vector<std::weak_ptr<SubscribeHandle<T>>>();
 		};
+		Observable(const Observable &c)
+		{
+			this->threadId = c.threadId;
+			value = c.value;
+			subscribers = c.subscribers;
+		}
 
 		std::shared_ptr<T> get()
 		{
@@ -383,7 +392,7 @@ namespace threadily {
 			{
 				this->value = newValue;
 
-				// make a copy so we don't edit the original while iterating
+				// create a copy of the subscribers
 				auto copy = this->subscribers;
 
 				// notify all handlers, if we couldn't get a lock, queue that handle for removal
@@ -393,20 +402,16 @@ namespace threadily {
 					if (std::shared_ptr<SubscribeHandle<T>> subscriber = it->lock())
 					{
 						subscriber->runCallback(newValue);
-						++it;
 					}
-					else
-					{
-						it = copy.erase(it);
-					}
+					++it;
 				}
-
-				this->subscribers = copy;
 			}
 		}
 
 		std::shared_ptr<ISubscribeHandle> subscribe(std::function<void(std::shared_ptr<T> newValue)> handler)
 		{
+			std::lock_guard<std::recursive_mutex> lock(subscribers_mutex);
+
 			std::shared_ptr<SubscribeHandle<T>> newSub = std::make_shared<SubscribeHandle<T>>(handler);
 			this->subscribers.push_back(newSub);
 
@@ -415,6 +420,8 @@ namespace threadily {
 
 		std::shared_ptr<ISubscribeHandle> subscribe(ISubscribeHandleCallback<T>* handler)
 		{
+			std::lock_guard<std::recursive_mutex> lock(subscribers_mutex);
+
 			std::shared_ptr<SubscribeHandle<T>> newSub = std::make_shared<SubscribeHandle<T>>(handler);
 			this->subscribers.push_back(newSub);
 
@@ -423,35 +430,34 @@ namespace threadily {
 
 		void unsubscribe(std::shared_ptr<ISubscribeHandle> handleToRemove)
 		{
-			// make a copy so we don't edit the original while iterating
-			auto copy = this->subscribers;
+			std::lock_guard<std::recursive_mutex> lock(subscribers_mutex);
 
-			for (auto it = copy.begin(); it != copy.end(); ++it)
+			for (auto it = this->subscribers.begin(); it != this->subscribers.end();)
 			{
 				if (it->expired())
 				{
-					copy.erase(it);
+					it = this->subscribers.erase(it);
+					continue;
 				}
 
 				auto d = it->lock();
 				if (d == handleToRemove)
 				{
-					copy.erase(it);
-					break;
+					it = this->subscribers.erase(it);
+					continue;
 				}
-			}
 
-			this->subscribers = copy;
+				++it;
+			}
 		}
 
 		size_t getSubscribersCount()
 		{
-			// make a copy so we don't edit the original while iterating
-			auto copy = this->subscribers;
+			std::lock_guard<std::recursive_mutex> lock(subscribers_mutex);
 
 			// clear out expired functions
-			auto it = copy.begin();
-			while (it != copy.end())
+			auto it = this->subscribers.begin();
+			while (it != this->subscribers.end())
 			{
 				if (std::shared_ptr<SubscribeHandle<T>> subscriber = it->lock())
 				{
@@ -459,11 +465,9 @@ namespace threadily {
 				}
 				else
 				{
-					it = copy.erase(it);
+					it = this->subscribers.erase(it);
 				}
 			}
-
-			this->subscribers = copy;
 
 			// return final size
 			return this->subscribers.size();
@@ -477,10 +481,8 @@ namespace threadily {
 				throw std::runtime_error("Current variable type and argument 'other' type are not the same. Cannot create a notification link between the two variables.");
 			}
 
-			std::function<void(std::shared_ptr<T> newValue)> handler = [thread, thingToNotify](std::shared_ptr<T> newValue)
-			{
-				thread->addWork(std::make_shared<ThreadQueueItem>([thingToNotify, newValue]()
-				{
+			std::function<void(std::shared_ptr<T> newValue)> handler = [thread, thingToNotify](std::shared_ptr<T> newValue) {
+				thread->addWork(std::make_shared<ThreadQueueItem>([thingToNotify, newValue]() {
 					thingToNotify->set(newValue);
 				}));
 			};
@@ -593,10 +595,11 @@ namespace threadily {
 	private:
 		std::vector<T> value;
 		std::vector<std::weak_ptr<SubscribeHandle<std::vector<T>>>> subscribers;
+		std::recursive_mutex subscribers_mutex;
 
 		void notifySubscribers(T value, size_t index, ObservableActionType action)
 		{
-			// make a copy so we don't edit the original while iterating
+			// create a copy of the subscribers
 			auto copy = this->subscribers;
 
 			// notify all handlers, if we couldn't get a lock, queue that handle for removal
@@ -606,21 +609,20 @@ namespace threadily {
 				if (std::shared_ptr<SubscribeHandle<std::vector<T>>> subscriber = it->lock())
 				{
 					subscriber->runCallback(value, index, action);
-					++it;
 				}
-				else
-				{
-					it = copy.erase(it);
-				}
+				++it;
 			}
-
-			this->subscribers = copy;
 		}
 	public:
 		Observable()
 		{
 			this->value = std::vector<T>();
 			this->subscribers = std::vector<std::weak_ptr<SubscribeHandle<std::vector<T>>>>();
+		}
+		Observable(const Observable &c)
+		{
+			value = c.value;
+			subscribers = c.subscribers;
 		}
 
 		size_t size()
@@ -674,6 +676,8 @@ namespace threadily {
 
 		std::shared_ptr<ISubscribeHandle> subscribe(std::function<void(T newValue, size_t index, ObservableActionType action)> handler)
 		{
+			std::lock_guard<std::recursive_mutex> lock(subscribers_mutex);
+
 			std::shared_ptr<SubscribeHandle<std::vector<T>>> newSub = std::make_shared<SubscribeHandle<std::vector<T>>>(handler);
 			this->subscribers.push_back(newSub);
 
@@ -682,6 +686,8 @@ namespace threadily {
 
 		std::shared_ptr<ISubscribeHandle> subscribe(ISubscribeHandleVectorCallback<T>* handler)
 		{
+			std::lock_guard<std::recursive_mutex> lock(subscribers_mutex);
+
 			std::shared_ptr<SubscribeHandle<std::vector<T>>> newSub = std::make_shared<SubscribeHandle<std::vector<T>>>(handler);
 			this->subscribers.push_back(newSub);
 
@@ -690,25 +696,25 @@ namespace threadily {
 
 		void unsubscribe(std::shared_ptr<ISubscribeHandle> handleToRemove)
 		{
-			// make a copy so we don't edit the original while iterating
-			auto copy = this->subscribers;
+			std::lock_guard<std::recursive_mutex> lock(subscribers_mutex);
 
-			for (auto it = copy.begin(); it != copy.end(); ++it)
+			for (auto it = this->subscribers.begin(); it != this->subscribers.end();)
 			{
 				if (it->expired())
 				{
-					copy.erase(it);
+					it = this->subscribers.erase(it);
+					continue;
 				}
 
 				auto d = it->lock();
 				if (d == handleToRemove)
 				{
-					copy.erase(it);
-					break;
+					it = this->subscribers.erase(it);
+					continue;
 				}
-			}
 
-			this->subscribers = copy;
+				++it;
+			}
 		}
 		virtual std::shared_ptr<ISubscribeHandle> subscribe(std::shared_ptr<IThreadQueueItemManager> thread, std::shared_ptr<IObservable> other) override
 		{
@@ -718,10 +724,8 @@ namespace threadily {
 				throw std::runtime_error("Current variable type and argument 'other' type are not the same. Cannot create a notification link between the two variables.");
 			}
 
-			std::function<void(T newValue, size_t index, ObservableActionType action)> handler = [thread, thingToNotify](T newValue, size_t index, ObservableActionType action)
-			{
-				thread->addWork(std::make_shared<ThreadQueueItem>([thingToNotify, newValue, index, action]()
-				{
+			std::function<void(T newValue, size_t index, ObservableActionType action)> handler = [thread, thingToNotify](T newValue, size_t index, ObservableActionType action) {
+				thread->addWork(std::make_shared<ThreadQueueItem>([thingToNotify, newValue, index, action]() {
 					switch (action)
 					{
 					case ObservableActionType::Insert:
@@ -751,10 +755,10 @@ namespace threadily {
 		unsigned int threadId;
 		std::vector<std::shared_ptr<T>> value;
 		std::vector<std::weak_ptr<SubscribeHandle<std::vector<T>>>> subscribers;
+		std::recursive_mutex subscribers_mutex;
 
 		void notifySubscribers(std::shared_ptr<T> value, size_t index, ObservableActionType action)
 		{
-			// make a copy so we don't edit the original while iterating
 			auto copy = this->subscribers;
 
 			// notify all handlers, if we couldn't get a lock, queue that handle for removal
@@ -764,15 +768,9 @@ namespace threadily {
 				if (std::shared_ptr<SubscribeHandle<std::vector<T>>> subscriber = it->lock())
 				{
 					subscriber->runCallback(value, index, action);
-					++it;
 				}
-				else
-				{
-					it = copy.erase(it);
-				}
+				++it;
 			}
-
-			this->subscribers = copy;
 		}
 	public:
 		Observable(unsigned int threadId)
@@ -781,6 +779,12 @@ namespace threadily {
 			this->value = std::vector<std::shared_ptr<T>>();
 			this->subscribers = std::vector<std::weak_ptr<SubscribeHandle<std::vector<T>>>>();
 		};
+		Observable(const Observable &c)
+		{
+			this->threadId = c.threadId;
+			value = c.value;
+			subscribers = c.subscribers;
+		}
 
 		size_t size()
 		{
@@ -859,14 +863,18 @@ namespace threadily {
 
 		std::shared_ptr<ISubscribeHandle> subscribe(std::function<void(std::shared_ptr<T> newValue, size_t index, ObservableActionType action)> handler)
 		{
+			std::lock_guard<std::recursive_mutex> lock(subscribers_mutex);
+
 			auto newSub = std::make_shared<SubscribeHandle<std::vector<T>>>(handler);
 			this->subscribers.push_back(newSub);
 
 			return newSub;
 		}
-		
+
 		std::shared_ptr<ISubscribeHandle> subscribe(ISubscribeHandleVectorCallback<T>* handler)
 		{
+			std::lock_guard<std::recursive_mutex> lock(subscribers_mutex);
+
 			auto newSub = std::make_shared<SubscribeHandle<std::vector<T>>>(handler);
 			this->subscribers.push_back(newSub);
 
@@ -876,25 +884,25 @@ namespace threadily {
 
 		void unsubscribe(std::shared_ptr<ISubscribeHandle> handleToRemove)
 		{
-			// make a copy so we don't edit the original while iterating
-			auto copy = this->subscribers;
+			std::lock_guard<std::recursive_mutex> lock(subscribers_mutex);
 
-			for (auto it = copy.begin(); it != copy.end(); ++it)
+			for (auto it = this->subscribers.begin(); it != this->subscribers.end();)
 			{
 				if (it->expired())
 				{
-					copy.erase(it);
+					it = this->subscribers.erase(it);
+					continue;
 				}
 
 				auto d = it->lock();
 				if (d == handleToRemove)
 				{
-					copy.erase(it);
-					break;
+					it = this->subscribers.erase(it);
+					continue;
 				}
-			}
 
-			this->subscribers = copy;
+				++it;
+			}
 		}
 
 		virtual std::shared_ptr<ISubscribeHandle> subscribe(std::shared_ptr<IThreadQueueItemManager> thread, std::shared_ptr<IObservable> other) override
@@ -905,10 +913,8 @@ namespace threadily {
 				throw std::runtime_error("Current variable type and argument 'other' type are not the same. Cannot create a notification link between the two variables.");
 			}
 
-			std::function<void(std::shared_ptr<T> newValue, size_t index, ObservableActionType action)> handler = [thread, thingToNotify](std::shared_ptr<T> newValue, size_t index, ObservableActionType action)
-			{
-				thread->addWork(std::make_shared<ThreadQueueItem>([thingToNotify, newValue, index, action]()
-				{
+			std::function<void(std::shared_ptr<T> newValue, size_t index, ObservableActionType action)> handler = [thread, thingToNotify](std::shared_ptr<T> newValue, size_t index, ObservableActionType action) {
+				thread->addWork(std::make_shared<ThreadQueueItem>([thingToNotify, newValue, index, action]() {
 					switch (action)
 					{
 					case ObservableActionType::Insert:
