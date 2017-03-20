@@ -29,9 +29,9 @@ Lets use an example to help understand how to get started. Let say you have an a
 First, on app launch, you would let us know what threads need to exist in the system
 ```
 auto threadManager = std::make_shared<threadily::ThreadManager>();
-threadManager->getOrCreateThread(ThreadIds::UI); // UIThread -> doesn't inform anyone
-threadManager->getOrCreateThread(ThreadIds::Storage, { ThreadIds::UI }); // Storage thread -> sends notifications to UI thread
-threadManager->getOrCreateThread(ThreadIds::Service, { ThreadIds::Storage }); // Service thread -> Sends notifications to the Storage thread
+threadManager->getOrCreateThread(ThreadIds::ThreadId_UI); // UIThread -> doesn't inform anyone
+threadManager->getOrCreateThread(ThreadIds::ThreadId_Storage, { ThreadIds::ThreadId_UI }); // Storage thread -> sends notifications to UI thread
+threadManager->getOrCreateThread(ThreadIds::ThreadId_Service, { ThreadIds::ThreadId_Storage }); // Service thread -> Sends notifications to the Storage thread
 ```
 At this time, there are now three threads each of which have their own Object map and a Work Queue.
 
@@ -79,7 +79,7 @@ if (userDetailsThreadObjectManager == nullptr)
 	userDetailsThreadObjectManager = std::make_shared<threadily::ThreadObjectManager<UserDetails>>(threadManager);
 }
 
-auto userDetails_UI = userDetailsThreadObjectManager->getOrCreateObject(ThreadIds::UI, /*ObjectId*/ 0);
+auto userDetails_UI = userDetailsThreadObjectManager->getOrCreateObject(ThreadIds::ThreadId_UI, /*ObjectId*/ 0);
 
 // Now render the page with this object's properties
 page.firstNameLabel = userDetails_UI->firstName->get();
@@ -108,9 +108,9 @@ Now, depending on what design you are using (e.g. Flux, Redux, or something else
 UserDetails::StartLoad()
 {
 	// if we aren't on the service thread, just push the work to that thread
-    if (this->getThreadId() != ThreadIds::Service)
+    if (this->getThreadId() != ThreadIds::ThreadId_Service)
 	{
-		this->runOnPeer(ThreadIds::Service, [](std::shared_ptr<IThreadObject> sibling) {
+		this->runOnPeer(ThreadIds::ThreadId_Service, [](std::shared_ptr<IThreadObject> sibling) {
 			auto serviceObject = std::static_pointer_cast<UserDetails>(sibling);
 			sericeObject->StartLoad();
 		});

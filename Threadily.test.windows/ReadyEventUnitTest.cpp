@@ -30,8 +30,8 @@ namespace threadily
 			TEST_METHOD(ReadyEvent_WaitThenFinished)
 			{
 				auto threadManager = std::make_shared<ThreadManager>();
-				auto uiThread = threadManager->getOrCreateThread(ThreadIds::UI);
-				auto appThread = threadManager->getOrCreateThread(ThreadIds::App);
+				auto uiThread = threadManager->getOrCreateThread(ThreadIds::ThreadId_UI);
+				auto appThread = threadManager->getOrCreateThread(ThreadIds::ThreadId_App);
 
 				ReadyEvent re;
 				bool isFinished = false;

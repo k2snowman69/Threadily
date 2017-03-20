@@ -47,6 +47,9 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="app.js" />
+    <Compile Include="AppExampleUnitTest.js">
+      <TestFramework>Mocha</TestFramework>
+    </Compile>
     <Compile Include="PrimativesThreadObjectUnitTest.js">
       <SubType>Code</SubType>
       <TestFramework>Mocha</TestFramework>

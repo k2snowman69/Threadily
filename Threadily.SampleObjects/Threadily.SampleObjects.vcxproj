@@ -120,15 +120,30 @@ ENDLOCAL
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="App.cpp" />
+    <ClCompile Include="AppFactory.cpp" />
+    <ClCompile Include="AppManager.cpp" />
+    <ClCompile Include="Business.cpp" />
+    <ClCompile Include="BusinessManager.cpp" />
     <ClCompile Include="EmptyThreadObject.cpp" />
     <ClCompile Include="PrimativesThreadObject.cpp" />
+    <ClCompile Include="Product.cpp" />
+    <ClCompile Include="ProductManager.cpp" />
     <ClCompile Include="ThreadablesThreadObject.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="App.h" />
+    <ClInclude Include="AppFactory.h" />
+    <ClInclude Include="AppManager.h" />
+    <ClInclude Include="Business.h" />
+    <ClInclude Include="BusinessManager.h" />
     <ClInclude Include="CountingThreadObjectManager.h" />
     <ClInclude Include="EmptyThreadObject.h" />
     <ClInclude Include="PrimativesThreadObject.h" />
+    <ClInclude Include="Product.h" />
+    <ClInclude Include="ProductManager.h" />
     <ClInclude Include="ThreadablesThreadObject.h" />
+    <ClInclude Include="ThreadIds.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets" />

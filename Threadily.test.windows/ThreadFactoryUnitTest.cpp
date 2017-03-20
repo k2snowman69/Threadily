@@ -51,9 +51,9 @@ namespace threadily
 			TEST_METHOD(ThreadManager_Create_Success_Notification_2)
 			{
 				auto threadManager = std::make_shared<ThreadManager>();
-				auto uiThread = threadManager->getOrCreateThread(ThreadIds::UI, std::set<unsigned int>({ ThreadIds::App }), nullptr);
-				auto appThread = threadManager->getOrCreateThread(ThreadIds::App, std::set<unsigned int>({ ThreadIds::Service, ThreadIds::UI }), nullptr);
-				auto serviceThread = threadManager->getOrCreateThread(ThreadIds::Service, std::set<unsigned int>({ ThreadIds::App }), nullptr);
+				auto uiThread = threadManager->getOrCreateThread(ThreadIds::ThreadId_UI, std::set<unsigned int>({ ThreadIds::ThreadId_App }), nullptr);
+				auto appThread = threadManager->getOrCreateThread(ThreadIds::ThreadId_App, std::set<unsigned int>({ ThreadIds::ThreadId_Service, ThreadIds::ThreadId_UI }), nullptr);
+				auto serviceThread = threadManager->getOrCreateThread(ThreadIds::ThreadId_Service, std::set<unsigned int>({ ThreadIds::ThreadId_App }), nullptr);
 
 				Assert::IsTrue(uiThread->isNotifiedBy(appThread));
 				Assert::IsFalse(uiThread->isNotifiedBy(serviceThread));
