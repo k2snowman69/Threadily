@@ -31,6 +31,10 @@ namespace threadily {
 			// Business
 			void createBusinessAsync(std::string name);
 			void readBusinessesAsync(unsigned int index, unsigned int count, std::string name);
+			// Exception tests
+			void throwTest1();
+			void throwTest2();
+			void throwTest3();
 		};
 	}
 }

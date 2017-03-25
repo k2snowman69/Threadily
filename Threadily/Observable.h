@@ -66,6 +66,7 @@
 		.function("get", &threadily::Observable<typeName>::get) \
 		.function("set", &threadily::Observable<typeName>::set) \
 		.function("subscribe", select_overload<std::shared_ptr<threadily::ISubscribeHandle>(threadily::ISubscribeHandleCallback<typeName>*)>(&threadily::Observable<typeName>::subscribe), allow_raw_pointers()) \
+		.function("unsubscribe", &threadily::Observable<typeName>::unsubscribe) \
 		; \
 	class_<threadily::ISubscribeHandleCallback<typeName>>(EXPAND_AND_QUOTE(ISubscribeHandle##externalNameExtension##Callback)) \
 		.smart_ptr<std::shared_ptr<threadily::ISubscribeHandleCallback<typeName>>>(EXPAND_AND_QUOTE(ISubscribeHandle##externalNameExtension##Callback)) \
@@ -83,6 +84,7 @@
 		.function("set", &threadily::Observable<std::vector<typeName>>::set) \
 		.function("erase", &threadily::Observable<std::vector<typeName>>::erase) \
 		.function("subscribe", select_overload<std::shared_ptr<threadily::ISubscribeHandle>(threadily::ISubscribeHandleVectorCallback<typeName>*)>(&threadily::Observable<std::vector<typeName>>::subscribe), allow_raw_pointers()) \
+		.function("unsubscribe", &threadily::Observable<std::vector<typeName>>::unsubscribe) \
 		; \
 	class_<threadily::ISubscribeHandleVectorCallback<typeName>>(EXPAND_AND_QUOTE(ISubscribeHandle##externalNameExtension##VectorCallback)) \
 		.smart_ptr<std::shared_ptr<threadily::ISubscribeHandleVectorCallback<typeName>>>(EXPAND_AND_QUOTE(ISubscribeHandle##externalNameExtension##VectorCallback)) \
@@ -97,6 +99,7 @@
 		.function("get", &threadily::Observable<typeName>::get) \
 		.function("set", &threadily::Observable<typeName>::set) \
 		.function("subscribe", select_overload<std::shared_ptr<threadily::ISubscribeHandle>(threadily::ISubscribeHandleCallback<typeName>*)>(&threadily::Observable<typeName>::subscribe), allow_raw_pointers()) \
+		.function("unsubscribe", &threadily::Observable<typeName>::unsubscribe) \
 		; \
 	class_<threadily::ISubscribeHandleCallback<typeName>>(EXPAND_AND_QUOTE(ISubscribeHandle##externalNameExtension##Callback)) \
 		.smart_ptr<std::shared_ptr<threadily::ISubscribeHandleCallback<typeName>>>(EXPAND_AND_QUOTE(ISubscribeHandle##externalNameExtension##Callback)) \
@@ -115,6 +118,7 @@
 		.function("set", &threadily::Observable<std::vector<typeName>>::set) \
 		.function("erase", &threadily::Observable<std::vector<typeName>>::erase) \
 		.function("subscribe", select_overload<std::shared_ptr<threadily::ISubscribeHandle>(threadily::ISubscribeHandleVectorCallback<typeName>*)>(&threadily::Observable<std::vector<typeName>>::subscribe), allow_raw_pointers()) \
+		.function("unsubscribe", &threadily::Observable<std::vector<typeName>>::unsubscribe) \
 		; \
 	class_<threadily::ISubscribeHandleVectorCallback<typeName>>(EXPAND_AND_QUOTE(ISubscribeHandle##externalNameExtension##VectorCallback)) \
 		.smart_ptr<std::shared_ptr<threadily::ISubscribeHandleVectorCallback<typeName>>>(EXPAND_AND_QUOTE(ISubscribeHandle##externalNameExtension##VectorCallback)) \

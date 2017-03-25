@@ -22,7 +22,6 @@ namespace threadily {
 		}
 		Product::~Product()
 		{
-			printf("Product destroyed\n");
 		}
 		std::vector<std::shared_ptr<threadily::IObservable>> Product::getObservableProperties()
 		{

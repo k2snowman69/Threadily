@@ -84,7 +84,8 @@ xcopy /s/Y *.h $(OutputPath).
 set LIST=
 SETLOCAL EnableDelayedExpansion 
 for /f %%i in ('dir /b /a /s *.cpp') do set LIST=!LIST! %%i
-IF EXIST "C:\Program Files\Emscripten\emscripten\1.35.0\emcc" "C:\Program Files\Emscripten\emscripten\1.35.0\emcc" -std=c++11 %LIST% -I "$(OutputPath)..\Threadily" -o $(OutputPath)$(TargetName).bc -Oz
+REM IF EXIST "C:\Program Files\Emscripten\emscripten\1.35.0\emcc" "C:\Program Files\Emscripten\emscripten\1.35.0\emcc" -std=c++11 %LIST% -I "$(OutputPath)..\Threadily" -o $(OutputPath)$(TargetName).bc -O0 -s NO_EXIT_RUNTIME=1 -s EXCEPTION_DEBUG=1
+IF EXIST "C:\Program Files\Emscripten\emscripten\1.35.0\emcc" "C:\Program Files\Emscripten\emscripten\1.35.0\emcc" -std=c++11 %LIST% -I "$(OutputPath)..\Threadily" -o $(OutputPath)$(TargetName).bc -Oz -s NO_EXIT_RUNTIME=1
 ENDLOCAL
 </Command>
     </PostBuildEvent>
@@ -94,7 +95,8 @@ xcopy /s/Y *.h $(OutputPath).
 set LIST=
 SETLOCAL EnableDelayedExpansion 
 for /f %%i in ('dir /b /a /s *.cpp') do set LIST=!LIST! %%i
-IF EXIST "C:\Program Files\Emscripten\emscripten\1.35.0\emcc" "C:\Program Files\Emscripten\emscripten\1.35.0\emcc" -std=c++11 %LIST% -I "$(OutputPath)..\Threadily" -o $(OutputPath)$(TargetName).bc -Oz
+REM IF EXIST "C:\Program Files\Emscripten\emscripten\1.35.0\emcc" "C:\Program Files\Emscripten\emscripten\1.35.0\emcc" -std=c++11 %LIST% -I "$(OutputPath)..\Threadily" -o $(OutputPath)$(TargetName).bc -O0 -s NO_EXIT_RUNTIME=1 -s EXCEPTION_DEBUG=1
+IF EXIST "C:\Program Files\Emscripten\emscripten\1.35.0\emcc" "C:\Program Files\Emscripten\emscripten\1.35.0\emcc" -std=c++11 %LIST% -I "$(OutputPath)..\Threadily" -o $(OutputPath)$(TargetName).bc -Oz -s NO_EXIT_RUNTIME=1
 ENDLOCAL
 </Command>
     </PostBuildEvent>
@@ -104,7 +106,8 @@ xcopy /s/Y *.h $(OutputPath).
 set LIST=
 SETLOCAL EnableDelayedExpansion 
 for /f %%i in ('dir /b /a /s *.cpp') do set LIST=!LIST! %%i
-IF EXIST "C:\Program Files\Emscripten\emscripten\1.35.0\emcc" "C:\Program Files\Emscripten\emscripten\1.35.0\emcc" -std=c++11 %LIST% -I "$(OutputPath)..\Threadily" -o $(OutputPath)$(TargetName).bc -Oz
+REM IF EXIST "C:\Program Files\Emscripten\emscripten\1.35.0\emcc" "C:\Program Files\Emscripten\emscripten\1.35.0\emcc" -std=c++11 %LIST% -I "$(OutputPath)..\Threadily" -o $(OutputPath)$(TargetName).bc -O0 -s NO_EXIT_RUNTIME=1 -s EXCEPTION_DEBUG=1
+IF EXIST "C:\Program Files\Emscripten\emscripten\1.35.0\emcc" "C:\Program Files\Emscripten\emscripten\1.35.0\emcc" -std=c++11 %LIST% -I "$(OutputPath)..\Threadily" -o $(OutputPath)$(TargetName).bc -Oz -s NO_EXIT_RUNTIME=1
 ENDLOCAL
 </Command>
     </PostBuildEvent>
@@ -114,7 +117,8 @@ xcopy /s/Y *.h $(OutputPath).
 set LIST=
 SETLOCAL EnableDelayedExpansion 
 for /f %%i in ('dir /b /a /s *.cpp') do set LIST=!LIST! %%i
-IF EXIST "C:\Program Files\Emscripten\emscripten\1.35.0\emcc" "C:\Program Files\Emscripten\emscripten\1.35.0\emcc" -std=c++11 %LIST% -I "$(OutputPath)..\Threadily" -o $(OutputPath)$(TargetName).bc -Oz
+REM IF EXIST "C:\Program Files\Emscripten\emscripten\1.35.0\emcc" "C:\Program Files\Emscripten\emscripten\1.35.0\emcc" -std=c++11 %LIST% -I "$(OutputPath)..\Threadily" -o $(OutputPath)$(TargetName).bc -O0 -s NO_EXIT_RUNTIME=1 -s EXCEPTION_DEBUG=1
+IF EXIST "C:\Program Files\Emscripten\emscripten\1.35.0\emcc" "C:\Program Files\Emscripten\emscripten\1.35.0\emcc" -std=c++11 %LIST% -I "$(OutputPath)..\Threadily" -o $(OutputPath)$(TargetName).bc -Oz -s NO_EXIT_RUNTIME=1
 ENDLOCAL
 </Command>
     </PostBuildEvent>

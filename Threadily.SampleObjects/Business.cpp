@@ -33,7 +33,6 @@ namespace threadily {
 		}
 		Business::~Business()
 		{
-			printf("Business destroyed\n");
 		}
 		std::vector<std::shared_ptr<threadily::IObservable>> Business::getObservableProperties()
 		{
@@ -79,9 +78,7 @@ namespace threadily {
 			// if this isn't the service thread, then put the work on the service thread
 			if (this->getThreadId() != ThreadIds::ThreadId_Service)
 			{
-				printf("readProductsAsync - pre shared_from_this\n");
 				auto d = this->shared_from_this();
-				printf("readProductsAsync - post shared_from_this\n");
 
 				this->runOnPeer(ThreadIds::ThreadId_Service, [index, count, name](std::shared_ptr<IThreadObject> sibling) {
 					auto serviceObject = std::static_pointer_cast<Business>(sibling);
@@ -101,7 +98,7 @@ namespace threadily {
 			auto manager = std::static_pointer_cast<BusinessManager>(objectManager)->getProductManager();
 
 			// go through the results and populate the query value
-			for (unsigned int id = 0; id < productCounter; id++)
+			for (unsigned int id = index; (id < index + count) && (id < this->productCounter); id++)
 			{
 				auto threadilyResult = manager->getOrCreateObject(ThreadIds::ThreadId_Service, this->getId(), id);
 				this->products->set(id, threadilyResult);

@@ -30,7 +30,6 @@ namespace threadily {
 		}
 		App::~App()
 		{
-			printf("App destroyed\n");
 		}
 		std::vector<std::shared_ptr<threadily::IObservable>> App::getObservableProperties()
 		{
@@ -57,7 +56,6 @@ namespace threadily {
 
 			this->isCreateBusinessPending->set(true);
 
-			printf("createBusinessAsync - Success - Starting\n");
 			auto objectManager = this->getObjectManager().lock();
 			if (objectManager == nullptr)
 			{
@@ -68,13 +66,6 @@ namespace threadily {
 			threadilyResult->name->set(name);
 			this->createdBusiness->set(threadilyResult);
 
-			printf("App - pre shared_from_this\n");
-			auto r = this->shared_from_this();
-			printf("App - post shared_from_this\n");
-			printf("threadilyResult - pre  shared_from_this\n");
-			auto d = threadilyResult->shared_from_this();
-			printf("threadilyResult - post shared_from_this\n");
-
 			// set the property to no longer pending
 			this->isCreateBusinessPending->set(false);
 		}
@@ -83,11 +74,9 @@ namespace threadily {
 			// if this isn't the service thread, then put the work on the service thread
 			if (this->getThreadId() != ThreadIds::ThreadId_Service)
 			{
-				printf("readBusinessesAsync - pre shared_from_this\n");
 				auto d = this->shared_from_this();
-				printf("readBusinessesAsync - post shared_from_this\n");
 
-				this->runOnPeer(ThreadIds::ThreadId_Service, [index, count, name](std::shared_ptr<IThreadObject> sibling) {
+				this->runOnPeer(ThreadIds::ThreadId_Service, [this, index, count, name](std::shared_ptr<IThreadObject> sibling) {
 					auto serviceObject = std::static_pointer_cast<App>(sibling);
 					serviceObject->readBusinessesAsync(index, count, name);
 				});
@@ -104,7 +93,7 @@ namespace threadily {
 			auto manager = std::static_pointer_cast<AppManager>(objectManager)->getBusinessManager();
 
 			// go through the results and populate the query value
-			for (unsigned int id = 0; id < businessCounter; id++)
+			for (unsigned int id = index; (id < index + count) && (id < this->businessCounter); id++)
 			{
 				auto threadilyResult = manager->getOrCreateObject(ThreadIds::ThreadId_Service, id);
 				this->businesses->set(id, threadilyResult);
@@ -112,6 +101,18 @@ namespace threadily {
 
 			// set the property to no longer pending
 			this->isBusinessesPending->set(false);
+		}
+		void App::throwTest1()
+		{
+			throw new std::runtime_error("throwTest1");
+		}
+		void App::throwTest2()
+		{
+			throw std::runtime_error("throwTest1");
+		}
+		void App::throwTest3()
+		{
+			throw "throwTest1";
 		}
 #pragma endregion 
 
@@ -121,11 +122,15 @@ namespace threadily {
 		{
 			class_<App, base<threadily::ThreadObject>>("App")
 				.smart_ptr<std::shared_ptr<App>>("App")
-				.property("isBusinessesPending", &App::isCreateBusinessPending)
+				.property("isBusinessesPending", &App::isBusinessesPending)
+				.property("businesses", &App::businesses)
 				.property("isCreateBusinessPending", &App::isCreateBusinessPending)
 				.property("createdBusiness", &App::createdBusiness)
 				.function("createBusinessAsync", &App::createBusinessAsync)
-				.function("readBusinessesAsync", &App::createBusinessAsync)
+				.function("readBusinessesAsync", &App::readBusinessesAsync)
+				.function("throwTest1", &App::throwTest1)
+				.function("throwTest2", &App::throwTest2)
+				.function("throwTest3", &App::throwTest3)
 				;
 		}
 #endif
