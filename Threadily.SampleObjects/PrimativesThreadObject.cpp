@@ -11,7 +11,7 @@ namespace threadily
 {
 	namespace test
 	{
-		PrimativesThreadObject::PrimativesThreadObject(std::shared_ptr<IThreadObjectManager> objectManager, unsigned int threadId, unsigned int id) :
+		PrimativesThreadObject::PrimativesThreadObject(std::shared_ptr<IThreadObjectManager> objectManager, unsigned int threadId, ThreadObjectId id) :
 			ThreadObject(objectManager, threadId, id)
 		{
 			name = std::make_shared<Observable<std::wstring>>();

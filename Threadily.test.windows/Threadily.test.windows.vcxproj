@@ -164,6 +164,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AppExampleUnitTest.cpp" />
+    <ClCompile Include="CustomIdUnitTest.cpp" />
     <ClCompile Include="ObservableUnitTest.cpp" />
     <ClCompile Include="ObservableVectorUnitTest.cpp" />
     <ClCompile Include="ReadyEventUnitTest.cpp" />

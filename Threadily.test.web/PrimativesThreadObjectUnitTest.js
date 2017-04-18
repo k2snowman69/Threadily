@@ -18,19 +18,19 @@ describe('PrimativesThreadObjectUnitTest', function () {
 
         var PrimativesThreadObjectManager = new module.PrimativesThreadObjectManager(threadManager);
 
-        var obj_Service = PrimativesThreadObjectManager.getOrCreateObject(2, 0);
-        var obj_UI = PrimativesThreadObjectManager.getOrCreateObject(0, 0);
+        var obj_Service = PrimativesThreadObjectManager.getOrCreateObject(2, { id: 0 });
+        var obj_UI = PrimativesThreadObjectManager.getOrCreateObject(0, { id: 0 });
 
         var newName = "A name";
 
         var handler = obj_UI.name.subscribe(new module.ISubscribeHandleWStringCallback.implement({
             onChange(newString) {
-                assert.ok(newString == newName, "Should get a notification for the new name");
+                assert.ok(newString === newName, "Should get a notification for the new name");
                 done();
             }
         }));
 
-        assert.ok(obj_UI.name.get() == "", "Name should be empty before doing anything");
+        assert.ok(obj_UI.name.get() === "", "Name should be empty before doing anything");
         obj_Service.name.set(newName);
     })
 
@@ -49,8 +49,8 @@ describe('PrimativesThreadObjectUnitTest', function () {
 
         var PrimativesThreadObjectManager = new module.PrimativesThreadObjectManager(threadManager);
 
-        var obj_Service = PrimativesThreadObjectManager.getOrCreateObject(2, 0);
-        var obj_UI = PrimativesThreadObjectManager.getOrCreateObject(0, 0);
+        var obj_Service = PrimativesThreadObjectManager.getOrCreateObject(2, { id: 0 });
+        var obj_UI = PrimativesThreadObjectManager.getOrCreateObject(0, { id: 0 });
 
         var handler = obj_UI.stringArray.subscribe(new module.ISubscribeHandleWStringVectorCallback.implement({
             onChange(newInt, index, action) {
@@ -59,7 +59,7 @@ describe('PrimativesThreadObjectUnitTest', function () {
             }
         }));
 
-        assert.ok(obj_UI.stringArray.size() == "", "Array should be empty before doing anything");
+        assert.ok(obj_UI.stringArray.size() === 0, "Array should be empty before doing anything");
         obj_Service.stringArray.insert(0, 'Item 0');
     })
 
@@ -78,8 +78,8 @@ describe('PrimativesThreadObjectUnitTest', function () {
 
         var PrimativesThreadObjectManager = new module.PrimativesThreadObjectManager(threadManager);
 
-        var obj_Service = PrimativesThreadObjectManager.getOrCreateObject(2, 0);
-        var obj_UI = PrimativesThreadObjectManager.getOrCreateObject(0, 0);
+        var obj_Service = PrimativesThreadObjectManager.getOrCreateObject(2, { id: 0 });
+        var obj_UI = PrimativesThreadObjectManager.getOrCreateObject(0, { id: 0 });
 
         var handler = obj_UI.stringArray.subscribe(new module.ISubscribeHandleWStringVectorCallback.implement({
             onChange(newInt, index, action) {
@@ -88,7 +88,7 @@ describe('PrimativesThreadObjectUnitTest', function () {
             }
         }));
 
-        assert.ok(obj_UI.stringArray.size() == "", "Array should be empty before doing anything");
+        assert.ok(obj_UI.stringArray.size() === 0, "Array should be empty before doing anything");
         obj_Service.stringArray.insert(2, 'Item 2');
     })
 })

@@ -2,6 +2,7 @@
 
 #include <Observable.h>
 #include <IThreadManager.h>
+#include <ThreadObjectId.h>
 #include <ThreadObject.h>
 #include <ThreadObjectManager.h>
 #include <stack>
@@ -24,7 +25,7 @@ namespace threadily {
 		private:
 			unsigned int productCounter;
 		public:
-			Business(std::shared_ptr<threadily::IThreadObjectManager> objectManager, unsigned int threadId, unsigned int id);
+			Business(std::shared_ptr<threadily::IThreadObjectManager> objectManager, unsigned int threadId, ThreadObjectId id);
 			~Business();
 			virtual std::vector<std::shared_ptr<threadily::IObservable>> getObservableProperties() override;
 			// Products

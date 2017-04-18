@@ -69,6 +69,9 @@
     <ClInclude Include="ThreadIds.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="ProductId.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Header Files">

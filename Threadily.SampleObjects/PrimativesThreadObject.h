@@ -1,6 +1,7 @@
 #pragma once
 
 #include <string>
+#include <ThreadObjectId.h>
 #include <ThreadObject.h>
 #include <Observable.h>
 
@@ -20,7 +21,7 @@ namespace threadily
 			std::shared_ptr<Observable<std::vector<int>>> intArray;
 			std::shared_ptr<Observable<std::vector<std::wstring>>> stringArray;
 		public:
-			PrimativesThreadObject(std::shared_ptr<IThreadObjectManager> objectManager, unsigned int threadId, unsigned int id);
+			PrimativesThreadObject(std::shared_ptr<IThreadObjectManager> objectManager, unsigned int threadId, ThreadObjectId id);
 
 			virtual std::vector<std::shared_ptr<IObservable>> getObservableProperties() override;
 		};

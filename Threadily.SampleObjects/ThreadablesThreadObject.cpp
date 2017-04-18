@@ -11,7 +11,7 @@ namespace threadily
 {
 	namespace test
 	{
-		ThreadablesThreadObject::ThreadablesThreadObject(std::shared_ptr<IThreadObjectManager> objectManager, unsigned int threadId, unsigned int id) :
+		ThreadablesThreadObject::ThreadablesThreadObject(std::shared_ptr<IThreadObjectManager> objectManager, unsigned int threadId, ThreadObjectId id) :
 			ThreadObject(objectManager, threadId, id)
 		{
 			emptyObject = std::make_shared<Observable<EmptyThreadObject>>(threadId);

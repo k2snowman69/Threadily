@@ -15,7 +15,7 @@ using namespace emscripten;
 namespace threadily {
 	namespace test {
 #pragma region Constructor/Threadily
-		App::App(std::shared_ptr<threadily::IThreadObjectManager> objectManager, unsigned int threadId, unsigned int id)
+		App::App(std::shared_ptr<threadily::IThreadObjectManager> objectManager, unsigned int threadId, ThreadObjectId id)
 			: ThreadObject(objectManager, threadId, id)
 		{
 			// Business 

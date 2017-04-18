@@ -13,7 +13,7 @@ namespace threadily {
 	class ThreadObject : public IThreadObject , public std::enable_shared_from_this<ThreadObject>
 	{
 	public:
-		ThreadObject(std::shared_ptr<IThreadObjectManager> objectManager, unsigned int threadId, unsigned int id);
+		ThreadObject(std::shared_ptr<IThreadObjectManager> objectManager, unsigned int threadId, const ThreadObjectId & id);
 		~ThreadObject();
 
 	private:
@@ -25,7 +25,7 @@ namespace threadily {
 		std::shared_ptr<std::map<unsigned int, std::shared_ptr<std::vector<std::shared_ptr<ISubscribeHandle>>>>> threadObjectToChangeSubscribers;
 
 		unsigned int threadId;
-		unsigned int id;
+		ThreadObjectId id;
 		std::weak_ptr<IThreadObjectManager> objectManager;
 		void addDisposeListener(std::shared_ptr<ThreadObject> thingToNotify);
 	public:
@@ -33,7 +33,7 @@ namespace threadily {
 		void initLinks(std::shared_ptr<ThreadObject> baseObject);
 		virtual std::weak_ptr<IThreadObjectManager> getObjectManager() override;
 		virtual unsigned int getThreadId() override;
-		virtual unsigned int getId() override;
+		virtual const ThreadObjectId & getId() override;
 		static std::shared_ptr<ThreadObject> getReference(std::shared_ptr<ThreadObject>);
 		virtual std::vector<std::shared_ptr<IObservable>> getObservableProperties() override;
 		virtual void runOnPeer(unsigned int threadId, std::function<void(std::shared_ptr<IThreadObject> peer)> toExecute) override;

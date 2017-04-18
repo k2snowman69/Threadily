@@ -12,7 +12,7 @@ using namespace emscripten;
 namespace threadily 
 {
 
-	ThreadObject::ThreadObject(std::shared_ptr<IThreadObjectManager> objectManager, unsigned int threadId, unsigned int id)
+	ThreadObject::ThreadObject(std::shared_ptr<IThreadObjectManager> objectManager, unsigned int threadId, const ThreadObjectId & id)
 	{
 		if (objectManager == nullptr)
 		{
@@ -63,7 +63,7 @@ namespace threadily
 		return this->threadId;
 	}
 
-	unsigned int ThreadObject::getId()
+	const ThreadObjectId & ThreadObject::getId()
 	{
 		return this->id;
 	}
@@ -169,7 +169,6 @@ namespace threadily
 			.function("getId", &IThreadObject::getId, pure_virtual())
 			;
 		class_<ThreadObject, base<threadily::IThreadObject>>("ThreadObject")
-			.constructor<std::shared_ptr<IThreadObjectManager>, unsigned int, unsigned int>()
 			.smart_ptr<std::shared_ptr<ThreadObject>>("ThreadObject")
 			.class_function("getReference", &ThreadObject::getReference)
 			;

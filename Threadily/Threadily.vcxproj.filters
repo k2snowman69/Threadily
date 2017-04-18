@@ -60,6 +60,9 @@
     <ClInclude Include="Observable.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="ThreadObjectId.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ReadyEvent.cpp">
@@ -84,6 +87,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="ThreadObjectManager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ThreadObjectId.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

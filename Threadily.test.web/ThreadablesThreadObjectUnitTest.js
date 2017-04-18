@@ -19,10 +19,10 @@ describe('ThreadablesThreadObjectUnitTest', function () {
         var threadablesThreadObjectManager = new module.ThreadablesThreadObjectManager(threadManager);
         var emptyObjectManager = new module.EmptyThreadObjectManager(threadManager);
 
-        var obj_Service = threadablesThreadObjectManager.getOrCreateObject(2, 0);
-        var obj_UI = threadablesThreadObjectManager.getOrCreateObject(0, 0);
+        var obj_Service = threadablesThreadObjectManager.getOrCreateObject(2, { id: 0 });
+        var obj_UI = threadablesThreadObjectManager.getOrCreateObject(0, { id: 0 });
 
-        var emptyObject = emptyObjectManager.getOrCreateObject(2, 0);
+        var emptyObject = emptyObjectManager.getOrCreateObject(2, { id: 0 });
 
         var handler = obj_UI.emptyObject.subscribe(new module.ISubscribeHandleEmptyThreadObjectCallback.implement({
             onChange(newObject) {
@@ -51,10 +51,10 @@ describe('ThreadablesThreadObjectUnitTest', function () {
         var threadablesThreadObjectManager = new module.ThreadablesThreadObjectManager(threadManager);
         var emptyObjectManager = new module.EmptyThreadObjectManager(threadManager);
 
-        var obj_Service = threadablesThreadObjectManager.getOrCreateObject(2, 0);
-        var obj_UI = threadablesThreadObjectManager.getOrCreateObject(0, 0);
+        var obj_Service = threadablesThreadObjectManager.getOrCreateObject(2, { id: 0 });
+        var obj_UI = threadablesThreadObjectManager.getOrCreateObject(0, { id: 0 });
 
-        var emptyObject = emptyObjectManager.getOrCreateObject(2, 0);
+        var emptyObject = emptyObjectManager.getOrCreateObject(2, { id: 0 });
 
         var handler = obj_UI.emptyObjectArray.subscribe(new module.ISubscribeHandleEmptyThreadObjectVectorCallback.implement({
             onChange(newObject, index, action) {
@@ -84,10 +84,10 @@ describe('ThreadablesThreadObjectUnitTest', function () {
         var threadablesThreadObjectManager = new module.ThreadablesThreadObjectManager(threadManager);
         var emptyObjectManager = new module.EmptyThreadObjectManager(threadManager);
 
-        var obj_Service = threadablesThreadObjectManager.getOrCreateObject(2, 0);
-        var obj_UI = threadablesThreadObjectManager.getOrCreateObject(0, 0);
+        var obj_Service = threadablesThreadObjectManager.getOrCreateObject(2, { id: 0 });
+        var obj_UI = threadablesThreadObjectManager.getOrCreateObject(0, { id: 0 });
 
-        var emptyObject = emptyObjectManager.getOrCreateObject(2, 0);
+        var emptyObject = emptyObjectManager.getOrCreateObject(2, { id: 0 });
 
         var handler = obj_UI.emptyObjectArray.subscribe(new module.ISubscribeHandleEmptyThreadObjectVectorCallback.implement({
             onChange(newObject, index, action) {
@@ -117,10 +117,10 @@ describe('ThreadablesThreadObjectUnitTest', function () {
         var threadablesThreadObjectManager = new module.ThreadablesThreadObjectManager(threadManager);
         var emptyObjectManager = new module.EmptyThreadObjectManager(threadManager);
 
-        var obj_Service = threadablesThreadObjectManager.getOrCreateObject(2, 0);
-        var obj_UI = threadablesThreadObjectManager.getOrCreateObject(0, 0);
+        var obj_Service = threadablesThreadObjectManager.getOrCreateObject(2, { id: 0 });
+        var obj_UI = threadablesThreadObjectManager.getOrCreateObject(0, { id: 0 });
 
-        var emptyObject = emptyObjectManager.getOrCreateObject(2, 0);
+        var emptyObject = emptyObjectManager.getOrCreateObject(2, { id: 0 });
 
         var handler = obj_UI.emptyObjectArray.subscribe(new module.ISubscribeHandleEmptyThreadObjectVectorCallback.implement({
             onChange(newObject, index, action) {

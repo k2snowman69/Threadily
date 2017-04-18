@@ -14,13 +14,13 @@ namespace threadily {
 	class ThreadObjectManager : public IThreadObjectManager, public std::enable_shared_from_this<ThreadObjectManager<T>>
 	{
 	private:
-		std::shared_ptr<std::map<unsigned int, std::shared_ptr<std::map<unsigned int, std::weak_ptr<T>>>>> threadIdToObjectMap; // maps threadId -> objectId -> object
+		std::shared_ptr<std::map<unsigned int, std::shared_ptr<std::map<ThreadObjectId, std::weak_ptr<T>>>>> threadIdToObjectMap; // maps threadId -> objectId -> object
 		std::shared_ptr<IThreadManager> threadManager;
 #if !defined(EMSCRIPTEN) || defined(USE_PTHREADS)
 		std::mutex instances_m;
 #endif
 	private:
-		void removeObject(unsigned int threadId, int id)
+		void removeObject(unsigned int threadId, const ThreadObjectId & id)
 		{
 #if !defined(EMSCRIPTEN) || defined(USE_PTHREADS)
 			// this thread requires that you already have a lock on the instances mutex
@@ -32,12 +32,12 @@ namespace threadily {
 #endif
 
 			// create the map of objects per thread if needed
-			std::shared_ptr<std::map<unsigned int, std::weak_ptr<T>>> idToObject;
+			std::shared_ptr<std::map<ThreadObjectId, std::weak_ptr<T>>> idToObject;
 			auto threadObjects_it = threadIdToObjectMap->find(threadId);
 			if (threadObjects_it == threadIdToObjectMap->end())
 			{
-				idToObject = std::make_shared<std::map<unsigned int, std::weak_ptr<T>>>();
-				threadIdToObjectMap->insert(std::pair<unsigned int, std::shared_ptr<std::map<unsigned int, std::weak_ptr<T>>>>(threadId, idToObject));
+				idToObject = std::make_shared<std::map<ThreadObjectId, std::weak_ptr<T>>>();
+				threadIdToObjectMap->insert(std::pair<unsigned int, std::shared_ptr<std::map<ThreadObjectId, std::weak_ptr<T>>>>(threadId, idToObject));
 			}
 			else
 			{
@@ -48,7 +48,7 @@ namespace threadily {
 			idToObject->erase(id);
 		}
 
-		void addObject(unsigned int threadId, int id, std::shared_ptr<T> object)
+		void addObject(unsigned int threadId, const ThreadObjectId & id, std::shared_ptr<T> object)
 		{
 #if !defined(EMSCRIPTEN) || defined(USE_PTHREADS)
 			// this thread requires that you already have a lock on the instances mutex
@@ -60,12 +60,12 @@ namespace threadily {
 #endif
 
 			// create the map of objects per thread if needed
-			std::shared_ptr<std::map<unsigned int, std::weak_ptr<T>>> idToObject;
+			std::shared_ptr<std::map<ThreadObjectId, std::weak_ptr<T>>> idToObject;
 			auto threadObjects_it = threadIdToObjectMap->find(threadId);
 			if (threadObjects_it == threadIdToObjectMap->end())
 			{
-				idToObject = std::make_shared<std::map<unsigned int, std::weak_ptr<T>>>();
-				threadIdToObjectMap->insert(std::pair<unsigned int, std::shared_ptr<std::map<unsigned int, std::weak_ptr<T>>>>(threadId, idToObject));
+				idToObject = std::make_shared<std::map<ThreadObjectId, std::weak_ptr<T>>>();
+				threadIdToObjectMap->insert(std::pair<unsigned int, std::shared_ptr<std::map<ThreadObjectId, std::weak_ptr<T>>>>(threadId, idToObject));
 			}
 			else
 			{
@@ -73,10 +73,10 @@ namespace threadily {
 			}
 
 			// add the current item into that list
-			idToObject->insert(std::pair<unsigned int, std::weak_ptr<T>>(id, object));
+			idToObject->insert(std::pair<const ThreadObjectId &, std::weak_ptr<T>>(id, object));
 		}
 
-		std::shared_ptr<std::vector<std::shared_ptr<T>>> getActivePeerObjects(int id)
+		std::shared_ptr<std::vector<std::shared_ptr<T>>> getActivePeerObjects(const ThreadObjectId & id)
 		{
 #if !defined(EMSCRIPTEN) || defined(USE_PTHREADS)
 			// this thread requires that you already have a lock on the instances mutex
@@ -107,7 +107,7 @@ namespace threadily {
 			return this->getOrOptionallyCreateObject(threadId, object->getId(), true);
 		}
 
-		std::shared_ptr<T> getObject(unsigned int threadId, int id)
+		std::shared_ptr<T> getObject(unsigned int threadId, const ThreadObjectId & id)
 		{
 #if !defined(EMSCRIPTEN) || defined(USE_PTHREADS)
 			// this thread requires that you already have a lock on the instances mutex
@@ -120,7 +120,7 @@ namespace threadily {
 			return this->getOrOptionallyCreateObject(threadId, id, false);
 		}
 
-		std::shared_ptr<T> getOrOptionallyCreateObject(unsigned int threadId, int id, bool doCreate)
+		std::shared_ptr<T> getOrOptionallyCreateObject(unsigned int threadId, const ThreadObjectId & id, bool doCreate)
 		{
 #if !defined(EMSCRIPTEN) || defined(USE_PTHREADS)
 			// this thread requires that you already have a lock on the instances mutex
@@ -133,11 +133,11 @@ namespace threadily {
 
 			// get or create the list of objects for a specific thread
 			auto threadObjects_it = this->threadIdToObjectMap->find(threadId);
-			std::shared_ptr<std::map<unsigned int, std::weak_ptr<T>>> idToObject;
+			std::shared_ptr<std::map<ThreadObjectId, std::weak_ptr<T>>> idToObject;
 			if (threadObjects_it == threadIdToObjectMap->end())
 			{
-				idToObject = std::make_shared<std::map<unsigned int, std::weak_ptr<T>>>();
-				threadIdToObjectMap->insert(std::pair<unsigned int, std::shared_ptr<std::map<unsigned int, std::weak_ptr<T>>>>(threadId, idToObject));
+				idToObject = std::make_shared<std::map<ThreadObjectId, std::weak_ptr<T>>>();
+				threadIdToObjectMap->insert(std::pair<unsigned int, std::shared_ptr<std::map<ThreadObjectId, std::weak_ptr<T>>>>(threadId, idToObject));
 			}
 			else
 			{
@@ -198,7 +198,7 @@ namespace threadily {
 			}
 			this->threadManager = threadManager;
 
-			this->threadIdToObjectMap = std::make_shared<std::map<unsigned int, std::shared_ptr<std::map<unsigned int, std::weak_ptr<T>>>>>();
+			this->threadIdToObjectMap = std::make_shared<std::map<unsigned int, std::shared_ptr<std::map<ThreadObjectId, std::weak_ptr<T>>>>>();
 		}
 
 		~ThreadObjectManager()
@@ -206,7 +206,7 @@ namespace threadily {
 			this->threadIdToObjectMap->clear();
 		}
 
-		virtual std::shared_ptr<T> createObject(unsigned int threadId, int objectId)
+		virtual std::shared_ptr<T> createObject(unsigned int threadId, const ThreadObjectId & objectId)
 		{
 			std::shared_ptr<ThreadObjectManager<T>> me = this->shared_from_this();
 			auto newObj = std::make_shared<T>(me, threadId, objectId);
@@ -231,7 +231,7 @@ namespace threadily {
 			return this->threadManager;
 		}
 
-		std::shared_ptr<T> getOrCreateObject(unsigned int threadId, int id)
+		std::shared_ptr<T> getOrCreateObject(unsigned int threadId, const ThreadObjectId & id)
 		{
 #if !defined(EMSCRIPTEN) || defined(USE_PTHREADS)
 			std::lock_guard<std::mutex> lock(instances_m);
