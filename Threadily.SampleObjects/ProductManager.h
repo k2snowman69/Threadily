@@ -10,13 +10,11 @@
 namespace threadily {
 	namespace test {
 
-		class ProductManager : public threadily::ThreadObjectManager<Product>
+		class ProductManager : public threadily::ThreadObjectManager<Product, ProductId>
 		{
-		private:
-			std::vector<ProductId> productIdToInstanceId;
 		public:
 			ProductManager(std::shared_ptr<threadily::IThreadManager> threadManager);
-			std::shared_ptr<Product> getOrCreateObject(unsigned int threadId, unsigned long businessId, unsigned long id);
+			std::shared_ptr<Product> getOrCreateObject(unsigned int threadId, unsigned long businessId, unsigned long productId);
 		};
 	}
 }

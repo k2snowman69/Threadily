@@ -11,7 +11,7 @@ namespace threadily
 {
 	namespace test
 	{
-		EmptyThreadObject::EmptyThreadObject(std::shared_ptr<IThreadObjectManager> objectManager, unsigned int threadId, ThreadObjectId id) :
+		EmptyThreadObject::EmptyThreadObject(std::shared_ptr<IThreadObjectManager> objectManager, unsigned int threadId, const ThreadObjectId & id) :
 			ThreadObject(objectManager, threadId, id)
 		{
 			
@@ -38,7 +38,7 @@ namespace threadily
 			defineThreadObjectObservable(EmptyThreadObject, EmptyThreadObject);
 			defineThreadObjectObservableVector(EmptyThreadObject, EmptyThreadObject);
 
-			class_<EmptyThreadObject, base<ThreadObject>>("EmptyThreadObject")
+			class_<EmptyThreadObject, base<ThreadObject<>>>("EmptyThreadObject")
 				.smart_ptr<std::shared_ptr<EmptyThreadObject>>("EmptyThreadObject")
 				.function("getThreadId", &EmptyThreadObject::getThreadId)
 				;

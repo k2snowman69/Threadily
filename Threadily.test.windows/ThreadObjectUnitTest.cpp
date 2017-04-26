@@ -24,7 +24,7 @@ namespace threadily
 			{
 				try
 				{
-					auto threadObject_UI = std::make_shared<ThreadObject>(nullptr, ThreadIds::ThreadId_UI, 0);
+					auto threadObject_UI = std::make_shared<ThreadObject<>>(nullptr, ThreadIds::ThreadId_UI, 0);
 					Assert::Fail(L"Thread objects need a single manager to keep them all in sync");
 				}
 				catch (std::runtime_error e)
@@ -39,9 +39,9 @@ namespace threadily
 				threadManager->getOrCreateThread(ThreadIds::ThreadId_App, std::set<unsigned int>({ ThreadIds::ThreadId_UI }));
 				threadManager->getOrCreateThread(ThreadIds::ThreadId_UI);
 
-				auto threadObjectManager = std::make_shared<ThreadObjectManager<ThreadObject>>(threadManager);
-				auto threadObject_UI = threadObjectManager->getOrCreateObject(ThreadIds::ThreadId_UI, 0);
-				auto threadObject_Service = threadObjectManager->getOrCreateObject(ThreadIds::ThreadId_Service, 0);
+				auto threadObjectManager = std::make_shared<ThreadObjectManager<ThreadObject<>>>(threadManager);
+				auto threadObject_UI = threadObjectManager->getOrCreateObject(ThreadIds::ThreadId_UI, 4);
+				auto threadObject_Service = threadObjectManager->getOrCreateObject(ThreadIds::ThreadId_Service, 4);
 			}
 			// sets up the threads like so:
 			// Service -> App -> UI
@@ -138,9 +138,9 @@ namespace threadily
 				Assert::IsTrue(nullptr != threadObject_UI->emptyObject->get(), L"Make sure the UI object was set");
 				Assert::IsTrue(ThreadIds::ThreadId_UI == threadObject_UI->emptyObject->get()->getThreadId(), L"Expected the example object to be running on the UI thread");
 				Assert::IsTrue(ThreadIds::ThreadId_Service == threadObject_Service->emptyObject->get()->getThreadId(), L"Expected the example object to be running on the Service thread");
-				Assert::AreEqual(threadObject_UI->emptyObject->get()->getId().id, threadObject_Service->emptyObject->get()->getId().id, L"Make sure they have the same value");
+				Assert::AreEqual(threadObject_UI->emptyObject->get()->getId().instanceId, threadObject_Service->emptyObject->get()->getId().instanceId, L"Make sure they have the same value");
 				Assert::IsTrue(threadObject_UI->emptyObject->get().get() != threadObject_Service->emptyObject->get().get(), L"Make sure they are two distinct pointers");
-				Assert::AreEqual(threadObject_UI->emptyObject->get()->getId().id, threadObject_Service->emptyObject->get()->getId().id, L"Make sure they have the same id value");
+				Assert::AreEqual(threadObject_UI->emptyObject->get()->getId().instanceId, threadObject_Service->emptyObject->get()->getId().instanceId, L"Make sure they have the same id value");
 
 				threadObject_UI->emptyObject->unsubscribe(subscribeHandle);
 			}
@@ -176,9 +176,9 @@ namespace threadily
 				Assert::IsTrue(threadObject_UI->emptyObjectArray->size() == sizeBefore + 1, L"Expect example objects list to be size of 1");
 				Assert::IsTrue(ThreadIds::ThreadId_UI == threadObject_UI->emptyObjectArray->at(0)->getThreadId(), L"Expected the example object to be running on the UI thread");
 				Assert::IsTrue(ThreadIds::ThreadId_Service == threadObject_Service->emptyObjectArray->at(0)->getThreadId(), L"Expected the example object to be running on the Service thread");
-				Assert::AreEqual(threadObject_UI->emptyObjectArray->at(0)->getId().id, threadObject_Service->emptyObjectArray->at(0)->getId().id, L"Make sure they have the same value");
+				Assert::AreEqual(threadObject_UI->emptyObjectArray->at(0)->getId().instanceId, threadObject_Service->emptyObjectArray->at(0)->getId().instanceId, L"Make sure they have the same value");
 				Assert::IsTrue(threadObject_UI->emptyObjectArray->at(0).get() != threadObject_Service->emptyObjectArray->at(0).get(), L"Make sure they are two distinct pointers");
-				Assert::AreEqual(threadObject_UI->emptyObjectArray->at(0)->getId().id, threadObject_Service->emptyObjectArray->at(0)->getId().id, L"Make sure they have the same name value");
+				Assert::AreEqual(threadObject_UI->emptyObjectArray->at(0)->getId().instanceId, threadObject_Service->emptyObjectArray->at(0)->getId().instanceId, L"Make sure they have the same name value");
 
 				threadObject_UI->emptyObjectArray->unsubscribe(subscribeHandle);
 			}

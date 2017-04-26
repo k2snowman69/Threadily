@@ -13,7 +13,7 @@
 
 namespace threadily {
 	namespace test {
-		class Business : public threadily::ThreadObject
+		class Business : public threadily::ThreadObject<>
 		{
 		public:
 			std::shared_ptr<threadily::Observable<std::string>> name;
@@ -25,7 +25,7 @@ namespace threadily {
 		private:
 			unsigned int productCounter;
 		public:
-			Business(std::shared_ptr<threadily::IThreadObjectManager> objectManager, unsigned int threadId, ThreadObjectId id);
+			Business(std::shared_ptr<threadily::IThreadObjectManager> objectManager, unsigned int threadId, const ThreadObjectId & id);
 			~Business();
 			virtual std::vector<std::shared_ptr<threadily::IObservable>> getObservableProperties() override;
 			// Products

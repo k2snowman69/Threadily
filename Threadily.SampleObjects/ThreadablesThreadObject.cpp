@@ -11,7 +11,7 @@ namespace threadily
 {
 	namespace test
 	{
-		ThreadablesThreadObject::ThreadablesThreadObject(std::shared_ptr<IThreadObjectManager> objectManager, unsigned int threadId, ThreadObjectId id) :
+		ThreadablesThreadObject::ThreadablesThreadObject(std::shared_ptr<IThreadObjectManager> objectManager, unsigned int threadId, const ThreadObjectId & id) :
 			ThreadObject(objectManager, threadId, id)
 		{
 			emptyObject = std::make_shared<Observable<EmptyThreadObject>>(threadId);
@@ -28,7 +28,7 @@ namespace threadily
 		}
 #ifdef EMSCRIPTEN
 		EMSCRIPTEN_BINDINGS(ThreadablesThreadObjectManager) {
-			class_<ThreadablesThreadObject, base<ThreadObject>>("ThreadablesThreadObject")
+			class_<ThreadablesThreadObject, base<ThreadObject<>>>("ThreadablesThreadObject")
 				.smart_ptr<std::shared_ptr<ThreadablesThreadObject>>("ThreadablesThreadObject")
 				.property("emptyObject", &ThreadablesThreadObject::emptyObject)
 				.property("emptyObjectArray", &ThreadablesThreadObject::emptyObjectArray)

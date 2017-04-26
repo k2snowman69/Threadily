@@ -6,13 +6,13 @@
 using namespace emscripten;
 #endif
 
-namespace threadily
+namespace threadily 
 {
 #ifdef EMSCRIPTEN
-EMSCRIPTEN_BINDINGS(ThreadObjectId) {
-	value_object<ThreadObjectId>("ThreadObjectId")
-		.field("id", &ThreadObjectId::id)
-		;
-}
+	EMSCRIPTEN_BINDINGS(ThreadObjectId) {
+		value_object<ThreadObjectId>("ThreadObjectId")
+			.field("instanceId", &ThreadObjectId::instanceId)
+			;
+	}
 #endif
 }

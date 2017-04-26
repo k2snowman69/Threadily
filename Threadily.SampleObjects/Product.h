@@ -7,18 +7,14 @@
 
 namespace threadily {
 	namespace test {
-		class Product : public threadily::ThreadObject
+		class Product : public threadily::ThreadObject<ProductId>
 		{
 		public:
 			std::shared_ptr<threadily::Observable<std::string>> name;
 		public:
-			Product(std::shared_ptr<threadily::IThreadObjectManager> objectManager, unsigned int threadId, const ThreadObjectId & id);
+			Product(std::shared_ptr<threadily::IThreadObjectManager> objectManager, unsigned int threadId, const ProductId & id);
 			~Product();
-			ProductId getServiceId();
-			virtual const ThreadObjectId & getId() override;
 			virtual std::vector<std::shared_ptr<threadily::IObservable>> getObservableProperties() override;
-		private:
-			ProductId customId;
 		};
 	}
 }

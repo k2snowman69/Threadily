@@ -3,7 +3,7 @@
 #include <memory>
 #include <vector>
 #include "IObservable.h"
-#include "ThreadObjectId.h"
+#include "IThreadObjectId.h"
 
 namespace threadily {
 	class IThreadObjectManager;
@@ -12,7 +12,7 @@ namespace threadily {
 	public:
 		virtual std::weak_ptr<IThreadObjectManager> getObjectManager() = 0;
 		virtual unsigned int getThreadId() = 0;
-		virtual const ThreadObjectId & getId() = 0;
+		virtual const IThreadObjectId & getInstanceId() = 0;
 		virtual std::vector<std::shared_ptr<IObservable>> getObservableProperties() = 0;
 		virtual void runOnPeer(unsigned int threadId, std::function<void(std::shared_ptr<IThreadObject> peer)> toExecute) = 0;
 	};

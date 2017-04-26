@@ -63,6 +63,9 @@
     <ClInclude Include="ThreadObjectId.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="IThreadObjectId.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ReadyEvent.cpp">

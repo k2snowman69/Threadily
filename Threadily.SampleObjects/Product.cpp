@@ -15,11 +15,10 @@ using namespace emscripten;
 
 namespace threadily {
 	namespace test {
-		Product::Product(std::shared_ptr<threadily::IThreadObjectManager> objectManager, unsigned int threadId, const ThreadObjectId & id)
+		Product::Product(std::shared_ptr<threadily::IThreadObjectManager> objectManager, unsigned int threadId, const ProductId & id)
 			: ThreadObject(objectManager, threadId, id)
 		{
 			auto result = dynamic_cast<const ProductId&>(id);
-			this->customId = result;
 			this->name = std::make_shared<threadily::Observable<std::string>>();
 		}
 		Product::~Product()
@@ -30,13 +29,6 @@ namespace threadily {
 			return std::vector<std::shared_ptr<threadily::IObservable>>({
 				name,
 			});
-		}
-		ProductId Product::getServiceId()
-		{
-			return customId;
-		}
-		const ThreadObjectId & Product::getId() {
-			return this->customId;
 		}
 
 #ifdef EMSCRIPTEN
@@ -50,7 +42,7 @@ namespace threadily {
 			defineThreadObjectObservable(Product, Product);
 			defineThreadObjectObservableVector(Product, Product);
 
-			class_<Product, base<threadily::ThreadObject>>("Product")
+			class_<Product, base<threadily::ThreadObject<ProductId>>>("Product")
 				.smart_ptr<std::shared_ptr<Product>>("Product")
 				.property("name", &Product::name)
 				;
