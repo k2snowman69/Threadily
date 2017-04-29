@@ -1,5 +1,7 @@
 #pragma once
 
+#include <stdio.h>
+
 #include "ThreadIds.h"
 
 #include "App.h"
@@ -14,7 +16,7 @@ namespace threadily {
 				static AppFactory instance; // Guaranteed to be destroyed.
 										// Instantiated on first use.
 				return instance;
-			}
+			};
 		private:
 			AppFactory();
 			std::shared_ptr<threadily::ThreadObjectManager<App>> appThreadObjectManager;

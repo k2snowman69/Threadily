@@ -142,7 +142,7 @@ namespace threadily {
 		}
 		virtual const T_Id & getId()
 		{
-			return this->id;
+			return dynamic_cast<const T_Id &>(this->id);
 		}
 		virtual std::vector<std::shared_ptr<IObservable>> getObservableProperties() override
 		{

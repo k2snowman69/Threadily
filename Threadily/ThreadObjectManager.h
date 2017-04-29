@@ -102,7 +102,7 @@ namespace threadily {
 
 		std::shared_ptr<T> getPeer(unsigned int threadId, std::shared_ptr<T> object)
 		{
-			T_Id customId = object->getId();
+			T_Id customId = T_Id(object->getId());
 
 #if !defined(EMSCRIPTEN) || defined(USE_PTHREADS)
 			std::lock_guard<std::mutex> lock(instances_m);

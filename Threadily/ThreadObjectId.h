@@ -30,8 +30,9 @@ namespace threadily {
 		virtual operator unsigned int() const { return this->instanceId; }
 
 		// Override < so that comparisons for maps work
-		bool operator < (const ThreadObjectId& other) const {
-			return this->instanceId < other.instanceId;
+		virtual bool operator < (const IThreadObjectId& other) const override {
+			auto temp = dynamic_cast<const ThreadObjectId&>(other);
+			return this->instanceId < temp.instanceId;
 		};
 	};
 }

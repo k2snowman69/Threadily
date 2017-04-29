@@ -59,6 +59,9 @@
       <TestFramework>Mocha</TestFramework>
     </Compile>
     <Compile Include="Threadily.SampleObjects.js" />
+    <Content Include="index.html">
+      <SubType>Code</SubType>
+    </Content>
     <Content Include="package.json" />
     <Content Include="README.md" />
     <Content Include="Threadily.SampleObjects.js.mem" />
@@ -71,8 +74,8 @@
       cd
       echo Building Threadily.SampleObjects.js into this directory
       del Threadily.SampleObjects.js*
-      REM IF EXIST "C:\Program Files\Emscripten\emscripten\1.35.0\emcc" "C:\Program Files\Emscripten\emscripten\1.35.0\emcc" -std=c++11 --bind ..\$(Configuration)\Threadily\Threadily.bc ..\$(Configuration)\Threadily.SampleObjects\Threadily.SampleObjects.bc -o Threadily.SampleObjects.js -O0 -s NO_EXIT_RUNTIME=1 -s EXCEPTION_DEBUG=1
-      IF EXIST "C:\Program Files\Emscripten\emscripten\1.35.0\emcc" "C:\Program Files\Emscripten\emscripten\1.35.0\emcc" -std=c++11 --bind ..\$(Configuration)\Threadily\Threadily.bc ..\$(Configuration)\Threadily.SampleObjects\Threadily.SampleObjects.bc -o Threadily.SampleObjects.js -Oz -s NO_EXIT_RUNTIME=1
+      REM "C:\Program Files\Emscripten\emscripten\1.35.0\emcc" -std=c++11 --bind ..\$(Configuration)\Threadily\Threadily.bc ..\$(Configuration)\Threadily.SampleObjects\Threadily.SampleObjects.bc -o Threadily.SampleObjects.js -O0 -s NO_EXIT_RUNTIME=1 -s EXCEPTION_DEBUG=1
+      "C:\Program Files\Emscripten\emscripten\1.35.0\emcc" -std=c++11 --bind ..\$(Configuration)\Threadily\Threadily.bc ..\$(Configuration)\Threadily.SampleObjects\Threadily.SampleObjects.bc -o Threadily.SampleObjects.js -Oz -s NO_EXIT_RUNTIME=1
     </PreBuildEvent>
   </PropertyGroup>
   <PropertyGroup>

@@ -16,7 +16,10 @@ namespace threadily
 		class_<IThreadObject>("IThreadObject")
 			.smart_ptr<std::shared_ptr<IThreadObject>>("IThreadObject")
 			.function("getThreadId", &IThreadObject::getThreadId, pure_virtual())
-			//.function("getId", &IThreadObject::getInstanceId, pure_virtual())
+			.function("getInstanceId", &IThreadObject::getInstanceId, pure_virtual())
+			;
+		class_<ThreadObject<>, base<IThreadObject>>("ThreadObject")
+			.smart_ptr<std::shared_ptr<ThreadObject<>>>("ThreadObject")
 			;
 	}
 #endif

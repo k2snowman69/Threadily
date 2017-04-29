@@ -18,8 +18,8 @@ describe('PrimativesThreadObjectUnitTest', function () {
 
         var PrimativesThreadObjectManager = new module.PrimativesThreadObjectManager(threadManager);
 
-        var obj_Service = PrimativesThreadObjectManager.getOrCreateObject(2, { id: 0 });
-        var obj_UI = PrimativesThreadObjectManager.getOrCreateObject(0, { id: 0 });
+        var obj_Service = PrimativesThreadObjectManager.getOrCreateObject(2, { instanceId: 0 });
+        var obj_UI = PrimativesThreadObjectManager.getOrCreateObject(0, { instanceId: 0 });
 
         var newName = "A name";
 
@@ -49,8 +49,8 @@ describe('PrimativesThreadObjectUnitTest', function () {
 
         var PrimativesThreadObjectManager = new module.PrimativesThreadObjectManager(threadManager);
 
-        var obj_Service = PrimativesThreadObjectManager.getOrCreateObject(2, { id: 0 });
-        var obj_UI = PrimativesThreadObjectManager.getOrCreateObject(0, { id: 0 });
+        var obj_Service = PrimativesThreadObjectManager.getOrCreateObject(2, { instanceId: 0 });
+        var obj_UI = PrimativesThreadObjectManager.getOrCreateObject(0, { instanceId: 0 });
 
         var handler = obj_UI.stringArray.subscribe(new module.ISubscribeHandleWStringVectorCallback.implement({
             onChange(newInt, index, action) {
@@ -78,8 +78,8 @@ describe('PrimativesThreadObjectUnitTest', function () {
 
         var PrimativesThreadObjectManager = new module.PrimativesThreadObjectManager(threadManager);
 
-        var obj_Service = PrimativesThreadObjectManager.getOrCreateObject(2, { id: 0 });
-        var obj_UI = PrimativesThreadObjectManager.getOrCreateObject(0, { id: 0 });
+        var obj_Service = PrimativesThreadObjectManager.getOrCreateObject(2, { instanceId: 0 });
+        var obj_UI = PrimativesThreadObjectManager.getOrCreateObject(0, { instanceId: 0 });
 
         var handler = obj_UI.stringArray.subscribe(new module.ISubscribeHandleWStringVectorCallback.implement({
             onChange(newInt, index, action) {
