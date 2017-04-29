@@ -23,11 +23,11 @@ namespace threadily
 			TEST_METHOD(ThreadableObjectManager_CreateDestroyLoop)
 			{
 				auto threadManager = std::make_shared<ThreadManager>();
-				auto manager = std::make_shared<ThreadObjectManager<ThreadObject>>(threadManager);
+				auto manager = std::make_shared<ThreadObjectManager<ThreadObject<>>>(threadManager);
 
 				auto objectUI1 = manager->getOrCreateObject(ThreadIds::ThreadId_UI, 0);
 				Assert::IsNotNull(objectUI1.get());
-				std::weak_ptr<ThreadObject> objectUI1Weak = objectUI1;
+				std::weak_ptr<ThreadObject<>> objectUI1Weak = objectUI1;
 				objectUI1 = nullptr;
 
 				Assert::IsTrue(objectUI1Weak.expired(), L"Expected the element to be deleted since there are no reference to it");
@@ -47,11 +47,11 @@ namespace threadily
 				threadManager->getOrCreateThread(ThreadIds::ThreadId_UI, std::set<unsigned int>({ ThreadIds::ThreadId_App }), nullptr);
 				threadManager->getOrCreateThread(ThreadIds::ThreadId_App, std::set<unsigned int>({ ThreadIds::ThreadId_UI }), nullptr);
 
-				auto manager = std::make_shared<ThreadObjectManager<ThreadObject>>(threadManager);
+				auto manager = std::make_shared<ThreadObjectManager<ThreadObject<>>>(threadManager);
 
 				auto objectUI1 = manager->getOrCreateObject(ThreadIds::ThreadId_UI, 0);
 				Assert::IsNotNull(objectUI1.get());
-				std::weak_ptr<ThreadObject> objectUI1Weak = objectUI1;
+				std::weak_ptr<ThreadObject<>> objectUI1Weak = objectUI1;
 				objectUI1 = nullptr;
 
 				// Since it's a two way object, they hold each other alive

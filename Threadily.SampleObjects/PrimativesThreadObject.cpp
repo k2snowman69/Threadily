@@ -11,7 +11,7 @@ namespace threadily
 {
 	namespace test
 	{
-		PrimativesThreadObject::PrimativesThreadObject(std::shared_ptr<IThreadObjectManager> objectManager, unsigned int threadId, unsigned int id) :
+		PrimativesThreadObject::PrimativesThreadObject(std::shared_ptr<IThreadObjectManager> objectManager, unsigned int threadId, const ThreadObjectId & id) :
 			ThreadObject(objectManager, threadId, id)
 		{
 			name = std::make_shared<Observable<std::wstring>>();
@@ -31,7 +31,7 @@ namespace threadily
 		}
 #ifdef EMSCRIPTEN
 		EMSCRIPTEN_BINDINGS(PrimativesThreadObjectManager) {
-			class_<PrimativesThreadObject, base<ThreadObject>>("PrimativesThreadObject")
+			class_<PrimativesThreadObject, base<ThreadObject<>>>("PrimativesThreadObject")
 				.smart_ptr<std::shared_ptr<PrimativesThreadObject>>("PrimativesThreadObject")
 				.property("intValue", &PrimativesThreadObject::intValue)
 				.property("name", &PrimativesThreadObject::name)

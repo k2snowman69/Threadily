@@ -17,7 +17,7 @@ using namespace emscripten;
 namespace threadily {
 	namespace test {
 #pragma region Constructor/Threadily
-		Business::Business(std::shared_ptr<threadily::IThreadObjectManager> objectManager, unsigned int threadId, unsigned int id)
+		Business::Business(std::shared_ptr<threadily::IThreadObjectManager> objectManager, unsigned int threadId, const ThreadObjectId & id)
 			: ThreadObject(objectManager, threadId, id)
 		{
 			this->name = std::make_shared<threadily::Observable<std::string>>();
@@ -120,7 +120,7 @@ namespace threadily {
 			defineThreadObjectObservable(Business, Business);
 			defineThreadObjectObservableVector(Business, Business);
 
-			class_<Business, base<threadily::ThreadObject>>("Business")
+			class_<Business, base<threadily::ThreadObject<>>>("Business")
 				.smart_ptr<std::shared_ptr<Business>>("Business")
 				.property("name", &Business::name)
 				.property("isCreateProductPending", &Business::isCreateProductPending)

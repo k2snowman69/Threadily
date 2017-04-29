@@ -15,7 +15,7 @@ using namespace emscripten;
 namespace threadily {
 	namespace test {
 #pragma region Constructor/Threadily
-		App::App(std::shared_ptr<threadily::IThreadObjectManager> objectManager, unsigned int threadId, unsigned int id)
+		App::App(std::shared_ptr<threadily::IThreadObjectManager> objectManager, unsigned int threadId, const ThreadObjectId & id)
 			: ThreadObject(objectManager, threadId, id)
 		{
 			// Business 
@@ -120,7 +120,7 @@ namespace threadily {
 
 		EMSCRIPTEN_BINDINGS(App)
 		{
-			class_<App, base<threadily::ThreadObject>>("App")
+			class_<App, base<threadily::ThreadObject<>>>("App")
 				.smart_ptr<std::shared_ptr<App>>("App")
 				.property("isBusinessesPending", &App::isBusinessesPending)
 				.property("businesses", &App::businesses)

@@ -1,6 +1,7 @@
 #pragma once
 
 #include <string>
+#include <ThreadObjectId.h>
 #include <ThreadObject.h>
 #include <Observable.h>
 
@@ -11,7 +12,7 @@ namespace threadily
 	namespace test
 	{
 		// Class that helps testing of a ThreadObject that contains ThreadObject typed Observables
-		class ThreadablesThreadObject : public ThreadObject
+		class ThreadablesThreadObject : public ThreadObject<>
 		{
 			// variables
 		private:
@@ -20,7 +21,7 @@ namespace threadily
 			std::shared_ptr<Observable<EmptyThreadObject>> emptyObject;
 			std::shared_ptr<Observable<std::vector<EmptyThreadObject>>> emptyObjectArray;
 		public:
-			ThreadablesThreadObject(std::shared_ptr<IThreadObjectManager> objectManager, unsigned int threadId, unsigned int id);
+			ThreadablesThreadObject(std::shared_ptr<IThreadObjectManager> objectManager, unsigned int threadId, const ThreadObjectId & id);
 
 			virtual std::vector<std::shared_ptr<IObservable>> getObservableProperties() override;
 		};
