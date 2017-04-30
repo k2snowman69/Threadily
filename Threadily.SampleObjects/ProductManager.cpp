@@ -4,12 +4,14 @@
 
 namespace threadily {
 	namespace test {
-		ProductManager::ProductManager(std::shared_ptr<threadily::IThreadManager> threadManager) : threadily::ThreadObjectManager<Product>(threadManager)
+		ProductManager::ProductManager(std::shared_ptr<threadily::IThreadManager> threadManager) : threadily::ThreadObjectManager<Product, ProductId>(threadManager)
 		{
 		}
-		std::shared_ptr<Product> ProductManager::getOrCreateObject(unsigned int threadId, long businessId, long productId)
+		std::shared_ptr<Product> ProductManager::getOrCreateObject(unsigned int threadId, unsigned long businessId, unsigned long productId)
 		{
-			return threadily::ThreadObjectManager<Product>::getOrCreateObject(threadId, productId);
+			// it doesn't so we need to create it
+			auto customId = ProductId(businessId, productId);
+			return threadily::ThreadObjectManager<Product, ProductId>::getOrCreateObject(threadId, customId);
 		}
 	}
 }

@@ -1,5 +1,6 @@
 #pragma once
 
+#include <ThreadObjectId.h>
 #include <ThreadObjectManager.h>
 
 namespace threadily
@@ -20,7 +21,7 @@ namespace threadily
 				this->counter = 0;
 			}
 
-			virtual std::shared_ptr<T> createObject(unsigned int threadId, int objectId) override
+			virtual std::shared_ptr<T> createObject(unsigned int threadId, const ThreadObjectId & objectId) override
 			{
 				this->counter++;
 				return ThreadObjectManager<T>::createObject(threadId, objectId);

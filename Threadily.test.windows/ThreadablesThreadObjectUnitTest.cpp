@@ -35,7 +35,7 @@ namespace threadily
 				auto emptyObject = emptyObjectManager->getOrCreateObject(ThreadIds::ThreadId_Service, 0);
 
 				auto handler = obj_UI->emptyObject->subscribe([emptyObject](std::shared_ptr<EmptyThreadObject> newValue){
-					Assert::AreEqual(emptyObject->getId(), newValue->getId());
+					Assert::AreEqual(emptyObject->getId().instanceId, newValue->getId().instanceId);
 				});
 
 				Assert::IsNull(obj_UI->emptyObject->get().get());
