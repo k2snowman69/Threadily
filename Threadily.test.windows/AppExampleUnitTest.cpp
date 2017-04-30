@@ -68,7 +68,8 @@ namespace threadily {
 				Assert::AreEqual(1, (int)witness->products->size(), L"Should be 1 products for the business in the system");
 			}
 
-			TEST_METHOD(BusinessVectorIncreasesRefCount)
+			// https://github.com/k2snowman69/Threadily/issues/7
+			TEST_METHOD(BusinessVectorIncreasesRefCount_issue_7)
 			{
 				auto app = AppFactory::getInstance().create();
 
