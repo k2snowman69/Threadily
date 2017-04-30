@@ -68,6 +68,33 @@ namespace threadily {
 				Assert::AreEqual(1, (int)witness->products->size(), L"Should be 1 products for the business in the system");
 			}
 
+			// https://github.com/k2snowman69/Threadily/issues/7
+			TEST_METHOD(BusinessVectorIncreasesRefCount_issue_7)
+			{
+				auto app = AppFactory::getInstance().create();
+
+				// Create a business
+				waitForAsync(
+					app->isCreateBusinessPending,
+					[&app]() {
+					app->createBusinessAsync("Witness");
+				});
+				auto witness = app->createdBusiness->get();
+				Assert::AreEqual(std::string("Witness"), witness->name->get());
+
+				auto oldUseCount = witness.use_count();
+
+				// Now query the business populating app->businesses
+				waitForAsync(
+					app->isBusinessesPending,
+					[&app]() {
+					app->readBusinessesAsync(0, 10, "Wit");
+				});
+				Assert::AreEqual(1, (int)app->businesses->size(), L"Should be 1 businesses in the system");
+
+				Assert::AreEqual(oldUseCount + 1, witness.use_count(), L"Expected the use count to increase by one as it should now be stored in the businesses listing");
+			}
+
 			void waitForAsync(std::shared_ptr<threadily::Observable<bool>> isPending, std::function<void()> asyncMethod)
 			{
 				threadily::ReadyEvent ready;
