@@ -15,6 +15,10 @@ namespace threadily {
 		virtual const IThreadObjectId & getInstanceId() = 0;
 		virtual std::vector<std::shared_ptr<IObservable>> getObservableProperties() = 0;
 		virtual void runOnPeer(unsigned int threadId, std::function<void(std::shared_ptr<IThreadObject> peer)> toExecute) = 0;
+		static std::shared_ptr<IThreadObject> getReference(std::shared_ptr<IThreadObject> value)
+		{
+			return value;
+		};
 	};
 
 }
