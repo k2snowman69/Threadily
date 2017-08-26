@@ -15,6 +15,42 @@ namespace threadily {
 		{
 		public:
 
+			/**
+			* Basically tries to create everything in the system and any linkages in the system
+			*/
+			TEST_METHOD(ReadBusinessesAsync_VerifyNewBusinessIsOnUiThread)
+			{
+				auto app = AppFactory::getInstance().create();
+
+				// first see if the business exists
+				waitForAsync(
+					app->isBusinessesPending,
+					[&app]() {
+					app->readBusinessesAsync(0, 10, "Wit");
+				});
+				Assert::AreEqual(0, (int)app->businesses->size(), L"Should be 0 businesses in the system");
+
+				// Since it doesn't exist, we should make it!
+				waitForAsync(
+					app->isCreateBusinessPending,
+					[&app]() {
+					app->createBusinessAsync("Witness");
+				});
+				auto witness = app->createdBusiness->get();
+				Assert::AreEqual(std::string("Witness"), witness->name->get());
+
+				auto similarToThreadilyBridge = witness->products->subscribe([](std::shared_ptr<Product> newValue, size_t index, threadily::ObservableActionType action) {
+				});
+
+				// Now let's re-query that business again and check that it's on the right thread
+				waitForAsync(
+					app->isBusinessesPending,
+					[&app]() {
+					app->readBusinessesAsync(0, 10, "Wit");
+				});
+				Assert::AreEqual(1, (int)app->businesses->size(), L"Should be 1 businesses in the system");
+				Assert::AreEqual((int)ThreadIds::ThreadId_UI, (int)app->businesses->at(0)->getThreadId(), L"Verify the business is on the UI thread");
+			}
 
 			/**
 			* Basically tries to create everything in the system and any linkages in the system
@@ -31,7 +67,7 @@ namespace threadily {
 				});
 				Assert::AreEqual(0, (int)app->businesses->size(), L"Should be 0 businesses in the system");
 
-				// Since it doesn't exist, we should make it! First the address
+				// Since it doesn't exist, we should make it!
 				waitForAsync(
 					app->isCreateBusinessPending,
 					[&app]() {
@@ -43,7 +79,7 @@ namespace threadily {
 				auto similarToThreadilyBridge = witness->products->subscribe([](std::shared_ptr<Product> newValue, size_t index, threadily::ObservableActionType action) {
 				});
 
-				// Even though we have the business let's check it's product listings anyway
+				// Even though we just created the business let's check it's product listings anyway
 				waitForAsync(
 					witness->isProductsPending,
 					[&witness]() {
