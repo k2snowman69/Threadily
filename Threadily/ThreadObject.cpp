@@ -21,6 +21,7 @@ namespace threadily
 			;
 		class_<ThreadObject<>, base<IThreadObject>>("ThreadObject")
 			.smart_ptr<std::shared_ptr<ThreadObject<>>>("ThreadObject")
+			.function("getId", &threadily::ThreadObject<>::getId)
 			;
 	}
 #endif
