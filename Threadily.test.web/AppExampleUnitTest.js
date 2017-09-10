@@ -84,22 +84,102 @@ describe('App Example', function () {
             });
         });
     });
-    it('throw test 1', function () {
+
+    it('Create product on business out of scope', function (done) {
+        var handle = null;
+
+        var createProduct = function (newBusiness, productName, onDone) {
+            handle = newBusiness.isCreateProductPending.subscribe(new module.ISubscribeHandleBoolCallback.implement({
+                onChange(isPending) {
+                    if (!isPending) {
+                        newBusiness.isCreateProductPending.unsubscribe(handle);
+                        console.log("Create product complete");
+                        onDone();
+                    }
+                }
+            }));
+            console.log("Creating product");
+            newBusiness.createProductAsync(productName);
+        }
+        var createBusiness = function (app, businessName, onDone) {
+            handle = app.isCreateBusinessPending.subscribe(new module.ISubscribeHandleBoolCallback.implement({
+                onChange(isPending) {
+                    if (!isPending) {
+                        app.isCreateBusinessPending.unsubscribe(handle);
+                        console.log("Creating Businesss complete");
+                        onDone();
+                    }
+                }
+            }));
+            console.log("Creating Business");
+            app.createBusinessAsync(businessName);
+        }
+
         var app = new module.AppFactory.getInstance().create();
-        assert.throws(function () {
-            app.throwTest1();
-        }, "throwTest1");
+        var handle = app.createdBusiness.subscribe(new module.ISubscribeHandleBusinessCallback.implement({
+            onChange(newBusiness) {
+                if (newBusiness != null) {
+                    app.createdBusiness.unsubscribe(handle);
+                    setTimeout(function () {
+                        assert.throws(function () {
+                            newBusiness.createProductAsync("Product");
+                        }, "Expected create product to throw due to newBusiness being out of scope");
+                        done();
+                    }, 100);
+                }
+            }
+        }));
+        createBusiness(app, "Business", function () {        });
     });
-    it('throw test 2', function () {
+
+    it('Clone subscription', function (done) {
+        var handle = null;
+
+        var createProduct = function (newBusiness, productName, onDone) {
+            handle = newBusiness.isCreateProductPending.subscribe(new module.ISubscribeHandleBoolCallback.implement({
+                onChange(isPending) {
+                    if (!isPending) {
+                        newBusiness.isCreateProductPending.unsubscribe(handle);
+                        console.log("Reading products complete");
+                        onDone();
+                    }
+                }
+            }));
+            console.log("Creating product");
+            newBusiness.createProductAsync(productName);
+        }
+        var createBusiness = function (app, businessName, onDone) {
+            handle = app.isCreateBusinessPending.subscribe(new module.ISubscribeHandleBoolCallback.implement({
+                onChange(isPending) {
+                    if (!isPending) {
+                        app.isCreateBusinessPending.unsubscribe(handle);
+                        console.log("Creating Businesss complete");
+                        onDone();
+                    }
+                }
+            }));
+            console.log("Creating Business");
+            app.createBusinessAsync(businessName);
+        }
+
         var app = new module.AppFactory.getInstance().create();
-        assert.throws(function () {
-            app.throwTest1();
-        }, "throwTest1");
-    });
-    it('throw test 3', function () {
-        var app = new module.AppFactory.getInstance().create();
-        assert.throws(function () {
-            app.throwTest1();
-        }, "throwTest1");
+        app.createdBusiness.subscribe(new module.ISubscribeHandleBusinessCallback.implement({
+            onChange(newBusiness) {
+                if (newBusiness != null) {
+                    newBusiness = newBusiness.clone();
+                    setTimeout(function () {
+                        createProduct(newBusiness, "Product", function () {
+                            newBusiness.delete();
+                            assert.throws(function () {
+                                newBusiness.createProductAsync("Product after deleted");
+                            }, "Expected create product to throw due to newBusiness being out of scope");
+                            done();
+                        });
+                    }, 100);
+                }
+            }
+        }));
+        createBusiness(app, "Business", function () {
+        });
     });
 });
