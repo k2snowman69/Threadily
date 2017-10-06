@@ -1,0 +1,218 @@
+﻿import { assert, expect } from "chai";
+
+// If moduleResolution is node
+import { createInstance } from "threadily.sampleObjects"
+
+describe('App Example', () => {
+
+    it('Factory creates App, App creates Business, Business reads products', (done: MochaDone) => {
+        let handle = null;
+
+        let module = createInstance({
+            onRuntimeInitialized: () => {
+            },
+            locateFile: (filename) => {
+                if (filename === 'threadily.sampleObjects.js.mem') {
+                    return "node_modules/threadily.sampleObjects/ship/threadily.sampleObjects.js.mem"
+                }
+            },
+        });
+
+        let createProduct = (newBusiness, productName, onDone) => {
+            handle = newBusiness.isCreateProductPending.subscribe(new module.ISubscribeHandleBoolCallback.implement({
+                onChange(isPending) {
+                    if (!isPending) {
+                        newBusiness.isCreateProductPending.unsubscribe(handle);
+                        // console.log("Reading products complete");
+                        onDone();
+                    }
+                }
+            }));
+            // console.log("Creating product");
+            newBusiness.createProductAsync(productName);
+        }
+        let readProducts = (newBusiness, queryString, onDone) => {
+            handle = newBusiness.isProductsPending.subscribe(new module.ISubscribeHandleBoolCallback.implement({
+                onChange(isPending) {
+                    if (!isPending) {
+                        newBusiness.isProductsPending.unsubscribe(handle);
+                        // console.log("Reading products complete");
+                        onDone();
+                    }
+                }
+            }));
+            // console.log("Reading products");
+            newBusiness.readProductsAsync(0, 20, queryString);
+        }
+        let createBusiness = (app, businessName, onDone) => {
+            handle = app.isCreateBusinessPending.subscribe(new module.ISubscribeHandleBoolCallback.implement({
+                onChange(isPending) {
+                    if (!isPending) {
+                        app.isCreateBusinessPending.unsubscribe(handle);
+                        // console.log("Creating Businesss complete");
+                        onDone();
+                    }
+                }
+            }));
+            // console.log("Creating Business");
+            app.createBusinessAsync(businessName);
+        }
+        let readBusinesss = (app, queryString, onDone) => {
+            handle = app.isBusinessesPending.subscribe(new module.ISubscribeHandleBoolCallback.implement({
+                onChange(isPending) {
+                    if (!isPending) {
+                        app.isBusinessesPending.unsubscribe(handle);
+                        // console.log("Reading businesses complete");
+                        onDone();
+                    }
+                }
+            }));
+            // console.log("Reading businesses");
+            app.readBusinessesAsync(0, 20, queryString);
+        }
+
+        let app = module.AppFactory.getInstance().create();
+        readBusinesss(app, "", () => {
+            assert.equal(app.businesses.size(), 0, "Expected 0 businesses at first");
+            createBusiness(app, "Business", () => {
+                let business = app.createdBusiness.get();
+                readBusinesss(app, "", () => {
+                    assert.equal(app.businesses.size(), 1, "Expected 1 businesses after create");
+                    readProducts(business, "", () => {
+                        assert.equal(business.products.size(), 0, "Expected 1 products after create");
+                        createProduct(business, "Product 1", () => {
+                            readProducts(business, "", () => {
+                                assert.equal(business.products.size(), 1, "Expected 1 products after create");
+                                createProduct(business, "Product 2", () => {
+                                    readProducts(business, "", () => {
+                                        assert.equal(business.products.size(), 2, "Expected 1 products after create");
+                                        done();
+                                    });
+                                });
+                            });
+                        });
+                    });
+                });
+            });
+        });
+    });
+
+    it('Create product on business out of scope', (done: MochaDone) => {
+        let handle = null;
+
+        let module = createInstance({
+            onRuntimeInitialized: () => {
+            },
+            locateFile: (filename) => {
+                if (filename === 'threadily.sampleObjects.js.mem') {
+                    return "node_modules/threadily.sampleObjects/ship/threadily.sampleObjects.js.mem"
+                }
+            },
+        });
+
+        let createProduct = (newBusiness, productName, onDone) => {
+            handle = newBusiness.isCreateProductPending.subscribe(new module.ISubscribeHandleBoolCallback.implement({
+                onChange(isPending) {
+                    if (!isPending) {
+                        newBusiness.isCreateProductPending.unsubscribe(handle);
+                        // console.log("Create product complete");
+                        onDone();
+                    }
+                }
+            }));
+            // console.log("Creating product");
+            newBusiness.createProductAsync(productName);
+        }
+        let createBusiness = (app, businessName, onDone) => {
+            handle = app.isCreateBusinessPending.subscribe(new module.ISubscribeHandleBoolCallback.implement({
+                onChange(isPending) {
+                    if (!isPending) {
+                        app.isCreateBusinessPending.unsubscribe(handle);
+                        app.createdBusiness.clone();
+                        // console.log("Creating Businesss complete");
+                        onDone();
+                    }
+                }
+            }));
+            // console.log("Creating Business");
+            app.createBusinessAsync(businessName);
+        }
+
+        let app = module.AppFactory.getInstance().create();
+        let createdBusinessHandle = app.createdBusiness.subscribe(new module.ISubscribeHandleBusinessCallback.implement({
+            onChange(newBusiness) {
+                if (newBusiness != null) {
+                    app.createdBusiness.unsubscribe(createdBusinessHandle);
+                    setTimeout(() => {
+                        assert.throws(() => {
+                            newBusiness.createProductAsync("Product");
+                        }, "Cannot pass deleted object as a pointer of type Business*");
+                        done();
+                    }, 1);
+                }
+            }
+        }));
+        createBusiness(app, "Business", () => { });
+    });
+
+    it('Clone subscription', (done: MochaDone) => {
+        let handle = null;
+
+        let module = createInstance({
+            onRuntimeInitialized: () => {
+            },
+            locateFile: (filename) => {
+                if (filename === 'threadily.sampleObjects.js.mem') {
+                    return "node_modules/threadily.sampleObjects/ship/threadily.sampleObjects.js.mem"
+                }
+            },
+        });
+
+        let createProduct = (newBusiness, productName, onDone) => {
+            handle = newBusiness.isCreateProductPending.subscribe(new module.ISubscribeHandleBoolCallback.implement({
+                onChange(isPending) {
+                    if (!isPending) {
+                        newBusiness.isCreateProductPending.unsubscribe(handle);
+                        // console.log("Reading products complete");
+                        onDone();
+                    }
+                }
+            }));
+            // console.log("Creating product");
+            newBusiness.createProductAsync(productName);
+        }
+        let createBusiness = (app, businessName, onDone) => {
+            handle = app.isCreateBusinessPending.subscribe(new module.ISubscribeHandleBoolCallback.implement({
+                onChange(isPending) {
+                    if (!isPending) {
+                        app.isCreateBusinessPending.unsubscribe(handle);
+                        // console.log("Creating Businesss complete");
+                        onDone();
+                    }
+                }
+            }));
+            // console.log("Creating Business");
+            app.createBusinessAsync(businessName);
+        }
+
+        let app = module.AppFactory.getInstance().create();
+        app.createdBusiness.subscribe(new module.ISubscribeHandleBusinessCallback.implement({
+            onChange(newBusiness) {
+                if (newBusiness != null) {
+                    newBusiness = newBusiness.clone();
+                    setTimeout(() => {
+                        createProduct(newBusiness, "Product", () => {
+                            newBusiness.delete();
+                            assert.throws(() => {
+                                newBusiness.createProductAsync("Product after deleted");
+                            }, "Cannot pass deleted object as a pointer of type Business*");
+                            done();
+                        });
+                    }, 1);
+                }
+            }
+        }));
+        createBusiness(app, "Business", () => {
+        });
+    });
+});
