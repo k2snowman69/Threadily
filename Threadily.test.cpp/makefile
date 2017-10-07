@@ -6,8 +6,8 @@ TARGET_NAME_GCC = threadily.test.exe
 # Dependent libraries
 LIBRARIES_DEBUG = $(call FixPath,../threadily/debug/libthreadily.a) $(call FixPath,../threadily.sampleObjects/debug/libthreadily.sampleObjects.a)
 LIBRARIES_SHIP = $(call FixPath,../threadily/ship/libthreadily.a) $(call FixPath,../threadily.sampleObjects/ship/libthreadily.sampleObjects.a)
-LIBRARIES_FLAGS_DEBUG = -I$(call FixPath,../../bandit) -I$(call FixPath,../threadily/debug/headers) -L$(call FixPath,../threadily/debug) -lthreadily -I$(call FixPath,../threadily.sampleObjects/debug/headers) -L$(call FixPath,../threadily.sampleObjects/debug) -lthreadily.sampleObjects
-LIBRARIES_FLAGS_SHIP = -I$(call FixPath,../../bandit) -I$(call FixPath,../threadily/ship/headers) -L$(call FixPath,../threadily/ship) -lthreadily -I$(call FixPath,../threadily.sampleObjects/ship/headers) -L$(call FixPath,../threadily.sampleObjects/ship) -lthreadily.sampleObjects
+LIBRARIES_FLAGS_DEBUG = -I$(call FixPath,../bandit) -I$(call FixPath,../threadily/debug/headers) -L$(call FixPath,../threadily/debug) -lthreadily -I$(call FixPath,../threadily.sampleObjects/debug/headers) -L$(call FixPath,../threadily.sampleObjects/debug) -lthreadily.sampleObjects
+LIBRARIES_FLAGS_SHIP = -I$(call FixPath,../bandit) -I$(call FixPath,../threadily/ship/headers) -L$(call FixPath,../threadily/ship) -lthreadily -I$(call FixPath,../threadily.sampleObjects/ship/headers) -L$(call FixPath,../threadily.sampleObjects/ship) -lthreadily.sampleObjects
 # Inputs
 CPP_FILES = $(call rwildcard,src/,*.cpp) 
 HEADER_FILES = $(call rwildcard,src/,*.h) 

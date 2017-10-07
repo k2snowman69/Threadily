@@ -3,6 +3,7 @@
 // std includes
 #include <iostream>
 #include <memory>
+#include <thread>
 // Threadily includes
 #include <ReadyEvent.h>
 #include <ThreadManager.h>
@@ -38,8 +39,7 @@ go_bandit([]() {
             bool isFinished = false;
 
             uiThread->addWork(std::make_shared<ThreadQueueItem>([&re, &isFinished]() {
-                // TODO - rickyp - This didn't compile
-                //std::this_thread::sleep_for(std::chrono::seconds(1));
+                std::this_thread::sleep_for(std::chrono::seconds(1));
                 isFinished = true;
                 re.finished();
             }));

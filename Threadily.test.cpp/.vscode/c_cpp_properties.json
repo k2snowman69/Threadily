@@ -45,7 +45,11 @@
         {
             "name": "Win32",
             "includePath": [
-                "${workspaceRoot}"
+                "${workspaceFolder}",
+                "${workspaceRoot}\\..\\bandit",
+                "${workspaceRoot}\\..\\Threadily\\ship\\headers",
+                "${workspaceRoot}\\..\\Threadily.SampleObjects\\ship\\headers",
+                "D:\\MinGW\\mingw64\\x86_64-w64-mingw32\\include\\c++"
             ],
             "defines": [
                 "_DEBUG",
@@ -54,11 +58,11 @@
             "intelliSenseMode": "msvc-x64",
             "browse": {
                 "path": [
-                    "${workspaceRoot}",
-                    "C:/MinGW/mingw64/x86_64-w64-mingw32/include/c++",
-                    "C:/Users/RickyPatel/Desktop/bandit",
-                    "C:/Users/RickyPatel/Desktop/Threadily_New/Threadily/ship/headers",
-                    "C:/Users/RickyPatel/Desktop/Threadily_New/Threadily.SampleObjects/ship/headers"
+                    "${workspaceFolder}",
+                    "${workspaceRoot}\\..\\bandit",
+                    "${workspaceRoot}\\..\\Threadily\\ship\\headers",
+                    "${workspaceRoot}\\..\\Threadily.SampleObjects\\ship\\headers",
+                    "D:\\MinGW\\mingw64\\x86_64-w64-mingw32\\include\\c++"
                 ],
                 "limitSymbolsToIncludedHeaders": true,
                 "databaseFilename": ""
