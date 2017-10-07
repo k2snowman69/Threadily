@@ -27,5 +27,8 @@
         "type_traits": "cpp",
         "typeinfo": "cpp",
         "utility": "cpp"
+    },
+    "search.exclude": {
+        "**/bandit": true
     }
 }
