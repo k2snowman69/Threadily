@@ -1,43 +1,25 @@
+import * as threadily from "threadily";
+
 declare module 'threadily.sampleObjects' {
-    // BEGIN TODO - rickyp - Move these to Threadily.d.ts
-    interface Implement {
-        new(any): any;
-    }
-    interface ISubscribeHandleCallback<T> {
-        implement: Implement;
-    }
-    interface ISubscribeHandleBoolCallback extends ISubscribeHandleCallback<boolean> {
-    }
-    interface Observable<T> {
-        get(): T;
-        subscribe(any): any;
-        unsubscribe(any): void;
-    }
-    interface ObservableArray<T> {
-        size(): number;
-    }
-    // END TODO
-    interface ISubscribeHandleBusinessCallback extends ISubscribeHandleCallback<Business>{
-    }
     interface Product {
-        name: Observable<string>;
+        name: threadily.Observable<string>;
     }
     interface Business {
-		name: Observable<string>;
-        isCreateProductPending: Observable<boolean>;
-        createdProduct: Observable<Product>;
-        isProductsPending: Observable<boolean>;
-		products: ObservableArray<Product>;
-		readProductsAsync(): void;
-		createProductAsync(): void;
+		name: threadily.Observable<string>;
+        isCreateProductPending: threadily.Observable<boolean>;
+        createdProduct: threadily.Observable<Product>;
+        isProductsPending: threadily.Observable<boolean>;
+		products: threadily.ObservableVector<Product>;
+		readProductsAsync(index: number, pageSize: number, queryString: string): void;
+		createProductAsync(name: string): void;
     }
     interface App {
-        isBusinessesPending: Observable<boolean>;
-        businesses: ObservableArray<Business>;
-        isCreateBusinessPending: Observable<boolean>;
-        createdBusiness: Observable<Business>;
-        createBusinessAsync(): void;
-        readBusinessesAsync(): void;
+        isBusinessesPending: threadily.Observable<boolean>;
+        businesses: threadily.ObservableVector<Business>;
+        isCreateBusinessPending: threadily.Observable<boolean>;
+        createdBusiness: threadily.Observable<Business>;
+        createBusinessAsync(name: string): void;
+        readBusinessesAsync(index: number, pageSize: number, queryString: string): void;
         throwTest1(): void;
         throwTest2(): void;
         throwTest3(): void;
@@ -46,10 +28,32 @@ declare module 'threadily.sampleObjects' {
         getInstance(): AppFactory;
         create(): App;
     }
-    interface SampleObjects {
+    interface PrimativesThreadObject extends threadily.ThreadObject<threadily.ThreadObjectId> {
+
+    }
+    interface PrimativesThreadObjectManager extends threadily.ThreadObjectManager<PrimativesThreadObject>{
+
+    }
+    interface ThreadablesThreadObject extends threadily.ThreadObject<threadily.ThreadObjectId> {
+
+    }
+    interface ThreadablesThreadObjectManager extends threadily.ThreadObjectManager<ThreadablesThreadObject>{
+
+    }
+    interface EmptyThreadObject extends threadily.ThreadObject<threadily.ThreadObjectId> {
+
+    }
+    interface EmptyThreadObjectManager extends threadily.ThreadObjectManager<EmptyThreadObject>{
+
+    }
+    interface SampleObjects extends threadily.Threadily {
         AppFactory: AppFactory;
-        ISubscribeHandleBoolCallback: ISubscribeHandleBoolCallback;
-        ISubscribeHandleBusinessCallback: ISubscribeHandleBusinessCallback;
+        ISubscribeHandleBusinessCallback: threadily.ObservableCallback<Business>;
+        ISubscribeHandleEmptyThreadObjectCallback: threadily.ObservableCallback<EmptyThreadObject>;
+        ISubscribeHandleEmptyThreadObjectVectorCallback: threadily.ObservableVectorCallback<EmptyThreadObject>;
+        PrimativesThreadObjectManager: PrimativesThreadObjectManager;
+        ThreadablesThreadObjectManager: ThreadablesThreadObjectManager;
+        EmptyThreadObjectManager: EmptyThreadObjectManager;
     }
     export function createInstance(emscriptenArgs: any): SampleObjects;
 }

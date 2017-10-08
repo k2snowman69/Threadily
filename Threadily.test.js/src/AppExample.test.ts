@@ -1,14 +1,14 @@
 ﻿import { assert, expect } from "chai";
+import * as mocha from "mocha";
 
 // If moduleResolution is node
-import { createInstance } from "threadily.sampleObjects"
+import { createInstance, SampleObjects, App, Business, Product } from "threadily.sampleobjects"
 
 describe('App Example', () => {
+    let module: SampleObjects;
 
-    it('Factory creates App, App creates Business, Business reads products', (done: MochaDone) => {
-        let handle = null;
-
-        let module = createInstance({
+    beforeEach(() => {
+        module = createInstance({
             onRuntimeInitialized: () => {
             },
             locateFile: (filename) => {
@@ -17,9 +17,11 @@ describe('App Example', () => {
                 }
             },
         });
+    });
 
-        let createProduct = (newBusiness, productName, onDone) => {
-            handle = newBusiness.isCreateProductPending.subscribe(new module.ISubscribeHandleBoolCallback.implement({
+    it('Factory creates App, App creates Business, Business reads products', (done: MochaDone) => {
+        let createProduct = (newBusiness: Business, productName: string, onDone: () => void) => {
+            let handle = newBusiness.isCreateProductPending.subscribe(new module.ISubscribeHandleBoolCallback.implement({
                 onChange(isPending) {
                     if (!isPending) {
                         newBusiness.isCreateProductPending.unsubscribe(handle);
@@ -31,8 +33,8 @@ describe('App Example', () => {
             // console.log("Creating product");
             newBusiness.createProductAsync(productName);
         }
-        let readProducts = (newBusiness, queryString, onDone) => {
-            handle = newBusiness.isProductsPending.subscribe(new module.ISubscribeHandleBoolCallback.implement({
+        let readProducts = (newBusiness: Business, queryString: string, onDone: () => void) => {
+            let handle = newBusiness.isProductsPending.subscribe(new module.ISubscribeHandleBoolCallback.implement({
                 onChange(isPending) {
                     if (!isPending) {
                         newBusiness.isProductsPending.unsubscribe(handle);
@@ -44,8 +46,8 @@ describe('App Example', () => {
             // console.log("Reading products");
             newBusiness.readProductsAsync(0, 20, queryString);
         }
-        let createBusiness = (app, businessName, onDone) => {
-            handle = app.isCreateBusinessPending.subscribe(new module.ISubscribeHandleBoolCallback.implement({
+        let createBusiness = (app: App, businessName: string, onDone: () => void) => {
+            let handle = app.isCreateBusinessPending.subscribe(new module.ISubscribeHandleBoolCallback.implement({
                 onChange(isPending) {
                     if (!isPending) {
                         app.isCreateBusinessPending.unsubscribe(handle);
@@ -57,8 +59,8 @@ describe('App Example', () => {
             // console.log("Creating Business");
             app.createBusinessAsync(businessName);
         }
-        let readBusinesss = (app, queryString, onDone) => {
-            handle = app.isBusinessesPending.subscribe(new module.ISubscribeHandleBoolCallback.implement({
+        let readBusinesss = (app: App, queryString: string, onDone: () => void) => {
+            let handle = app.isBusinessesPending.subscribe(new module.ISubscribeHandleBoolCallback.implement({
                 onChange(isPending) {
                     if (!isPending) {
                         app.isBusinessesPending.unsubscribe(handle);
@@ -98,20 +100,8 @@ describe('App Example', () => {
     });
 
     it('Create product on business out of scope', (done: MochaDone) => {
-        let handle = null;
-
-        let module = createInstance({
-            onRuntimeInitialized: () => {
-            },
-            locateFile: (filename) => {
-                if (filename === 'threadily.sampleObjects.js.mem') {
-                    return "node_modules/threadily.sampleObjects/ship/threadily.sampleObjects.js.mem"
-                }
-            },
-        });
-
         let createProduct = (newBusiness, productName, onDone) => {
-            handle = newBusiness.isCreateProductPending.subscribe(new module.ISubscribeHandleBoolCallback.implement({
+            let handle = newBusiness.isCreateProductPending.subscribe(new module.ISubscribeHandleBoolCallback.implement({
                 onChange(isPending) {
                     if (!isPending) {
                         newBusiness.isCreateProductPending.unsubscribe(handle);
@@ -124,7 +114,7 @@ describe('App Example', () => {
             newBusiness.createProductAsync(productName);
         }
         let createBusiness = (app, businessName, onDone) => {
-            handle = app.isCreateBusinessPending.subscribe(new module.ISubscribeHandleBoolCallback.implement({
+            let handle = app.isCreateBusinessPending.subscribe(new module.ISubscribeHandleBoolCallback.implement({
                 onChange(isPending) {
                     if (!isPending) {
                         app.isCreateBusinessPending.unsubscribe(handle);
@@ -156,20 +146,8 @@ describe('App Example', () => {
     });
 
     it('Clone subscription', (done: MochaDone) => {
-        let handle = null;
-
-        let module = createInstance({
-            onRuntimeInitialized: () => {
-            },
-            locateFile: (filename) => {
-                if (filename === 'threadily.sampleObjects.js.mem') {
-                    return "node_modules/threadily.sampleObjects/ship/threadily.sampleObjects.js.mem"
-                }
-            },
-        });
-
         let createProduct = (newBusiness, productName, onDone) => {
-            handle = newBusiness.isCreateProductPending.subscribe(new module.ISubscribeHandleBoolCallback.implement({
+            let handle = newBusiness.isCreateProductPending.subscribe(new module.ISubscribeHandleBoolCallback.implement({
                 onChange(isPending) {
                     if (!isPending) {
                         newBusiness.isCreateProductPending.unsubscribe(handle);
@@ -182,7 +160,7 @@ describe('App Example', () => {
             newBusiness.createProductAsync(productName);
         }
         let createBusiness = (app, businessName, onDone) => {
-            handle = app.isCreateBusinessPending.subscribe(new module.ISubscribeHandleBoolCallback.implement({
+            let handle = app.isCreateBusinessPending.subscribe(new module.ISubscribeHandleBoolCallback.implement({
                 onChange(isPending) {
                     if (!isPending) {
                         app.isCreateBusinessPending.unsubscribe(handle);

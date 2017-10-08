@@ -4,7 +4,7 @@
     <script src="../node_modules/requirejs/require.js"></script>
     <script>
         var shared = null;
-        require(["./threadily.sampleObjects"], function (factory) {
+        require(["./threadily.sampleobjects"], function (factory) {
             shared = factory.createInstance({
                 onRuntimeInitialized: function () {
                     // Remember that the context here is the created module.

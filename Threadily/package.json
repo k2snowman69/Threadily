@@ -1,0 +1,13 @@
+{
+  "name": "threadily",
+  "version": "1.0.0",
+  "description": "A C++/JavaScript object marshalling system across threads",
+  "main": "threadily.js",
+  "types": "threadily.d.ts",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "MIT",
+  "private": true
+}

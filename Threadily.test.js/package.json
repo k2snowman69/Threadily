@@ -1,7 +1,7 @@
 {
   "name": "threadily.test.js",
   "version": "1.0.0",
-  "description": "",
+  "description": "Example of how to run javascript tests on Emscripten compiled code",
   "main": "index.js",
   "scripts": {
     "clean": "rmdir /S /Q app",
@@ -12,11 +12,12 @@
     "test": "npm run mocha && npm run karma",
     "trace": "tsc --traceResolution"
   },
+  "private": true,
   "author": "",
   "license": "MIT",
   "dependencies": {
     "requirejs": "^2.3.5",
-    "threadily.sampleObjects": "../threadily.sampleObjects.js"
+    "threadily.sampleobjects": "../Threadily.SampleObjects.js"
   },
   "devDependencies": {
     "@types/chai": "^4.0.4",
