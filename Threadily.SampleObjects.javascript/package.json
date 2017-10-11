@@ -1,9 +1,9 @@
 {
-  "name": "threadily.sampleObjects.javascript",
+  "name": "threadily.sampleobjects.javascript",
   "version": "1.0.0",
   "description": "Shared js library",
-  "main": "./ship/threadily.sampleObjects.javascript",
-  "types": "./ship/threadily.sampleObjects.javascript.d.ts",
+  "main": "./ship/threadily.sampleobjects.javascript",
+  "types": "./ship/threadily.sampleobjects.javascript.d.ts",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -11,7 +11,7 @@
   "license": "MIT",
   "private": true,
   "dependencies": {
-    "threadily.sampleObjects": "../Threadily.SampleObjects"
+    "threadily.sampleobjects": "../Threadily.SampleObjects"
   },
   "devDependencies": {
     "requirejs": "^2.3.5"

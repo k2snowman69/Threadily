@@ -8,7 +8,7 @@ POSTFIX = $(call FixPath,./src/postfix.js)
 LIBRARIES_DEBUG = $(call FixPath,../threadily/debug/threadily.bc) $(call FixPath,../Threadily.SampleObjects/debug/threadily.sampleObjects.bc)
 LIBRARIES_SHIP = $(call FixPath,../threadily/ship/threadily.bc) $(call FixPath,../Threadily.SampleObjects/ship/threadily.sampleObjects.bc)
 # Outputs
-TARGET_NAME_BASE = threadily.sampleObjects.javascript
+TARGET_NAME_BASE = threadily.sampleobjects.javascript
 TARGET_NAME_GCC = $(TARGET_NAME_BASE).js
 TARGET_NAME_GCC_DEBUG = $(call FixPath,debug/$(TARGET_NAME_GCC))
 TARGET_NAME_GCC_SHIP = $(call FixPath,ship/$(TARGET_NAME_GCC))

@@ -1,9 +1,9 @@
 {
-  "name": "threadily.sampleObjects",
+  "name": "threadily.sampleobjects",
   "version": "1.0.0",
   "description": "A C++/JavaScript object marshalling system across threads",
-  "main": "./ship/threadily.sampleObjects",
-  "types": "./ship/threadily.sampleObjects.d.ts",
+  "main": "./ship/threadily.sampleobjects",
+  "types": "./ship/threadily.sampleobjects.d.ts",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },

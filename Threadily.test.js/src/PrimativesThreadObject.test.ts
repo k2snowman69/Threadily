@@ -2,7 +2,7 @@ import { assert, expect } from "chai";
 import * as mocha from "mocha";
 
 // If moduleResolution is node
-import { createInstance, SampleObjects, App, Business, Product } from "threadily.sampleObjects.javascript";
+import { createInstance, SampleObjects, App, Business, Product } from "threadily.sampleobjects.javascript";
 
 describe('PrimativesThreadObjectUnitTest', () => {
     let module: SampleObjects;
@@ -12,8 +12,8 @@ describe('PrimativesThreadObjectUnitTest', () => {
             onRuntimeInitialized: () => {
             },
             locateFile: (filename) => {
-                if (filename === 'threadily.sampleObjects.javascript.mem') {
-                    return "node_modules/threadily.sampleObjects.javascript/ship/threadily.sampleObjects.javascript.mem"
+                if (filename === 'threadily.sampleobjects.javascript.js.mem') {
+                    return "node_modules/threadily.sampleObjects.javascript/ship/threadily.sampleobjects.javascript.js.mem"
                 }
             },
         });

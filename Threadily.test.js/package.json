@@ -17,7 +17,7 @@
   "license": "MIT",
   "dependencies": {
     "requirejs": "^2.3.5",
-    "threadily.sampleObjects.javascript": "../Threadily.SampleObjects.javascript"
+    "threadily.sampleobjects.javascript": "../Threadily.SampleObjects.javascript"
   },
   "devDependencies": {
     "@types/chai": "^4.0.4",
