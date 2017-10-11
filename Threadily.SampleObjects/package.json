@@ -1,15 +1,18 @@
 {
-  "name": "threadily",
+  "name": "threadily.sampleObjects",
   "version": "1.0.0",
   "description": "A C++/JavaScript object marshalling system across threads",
-  "main": "ship/threadily.js",
-  "types": "ship/threadily.d.ts",
+  "main": "./ship/threadily.sampleObjects",
+  "types": "./ship/threadily.sampleObjects.d.ts",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
   "license": "MIT",
   "private": true,
+  "dependencies": {
+    "threadily": "../Threadily"
+  },
   "files": [
     "ship/**"
   ]

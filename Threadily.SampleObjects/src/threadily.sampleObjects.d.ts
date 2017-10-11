@@ -55,5 +55,4 @@ declare module 'threadily.sampleObjects' {
         ThreadablesThreadObjectManager: ThreadablesThreadObjectManager;
         EmptyThreadObjectManager: EmptyThreadObjectManager;
     }
-    export function createInstance(emscriptenArgs: any): SampleObjects;
 }

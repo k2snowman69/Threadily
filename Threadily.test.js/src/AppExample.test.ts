@@ -2,7 +2,7 @@
 import * as mocha from "mocha";
 
 // If moduleResolution is node
-import { createInstance, SampleObjects, App, Business, Product } from "threadily.sampleobjects"
+import { createInstance, SampleObjects, App, Business, Product } from "threadily.sampleObjects.javascript";
 
 describe('App Example', () => {
     let module: SampleObjects;
@@ -12,8 +12,8 @@ describe('App Example', () => {
             onRuntimeInitialized: () => {
             },
             locateFile: (filename) => {
-                if (filename === 'threadily.sampleObjects.js.mem') {
-                    return "node_modules/threadily.sampleObjects/ship/threadily.sampleObjects.js.mem"
+                if (filename === 'threadily.sampleObjects.javascript.mem') {
+                    return "node_modules/threadily.sampleObjects.javascript/ship/threadily.sampleObjects.javascript.mem"
                 }
             },
         });
