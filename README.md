@@ -9,31 +9,52 @@ Finally, once you actually implement your multithreaded system, with your app-st
 
 This is where Threadily comes in. It is built to maintain the state of your application across multiple threads in an Observable pattern which is easy to pick up. Further, it's been built with emscripten in mind so it is very easy to transcompile into JavaScript!
 
+# Cloning this repository
+This repository makes use of submodules so it's best to use the following command
+
+`git clone --recursive https://github.com/k2snowman69/Threadily`
+
+or if you have already cloned the repository without --recursive, in your local repository run
+
+`git submodule update --init --recursive`
+
 # What you'll need to get started
-For C++ development on Windows
-* Visual Studio 2015 or higher
-* Download and install git
+For C++ development
+* Download and install git and clone this repository
+* Windows Only - Mingw64 - http://mingw-w64.org/
 
-For JavaScript development on Windows
-* All of the items under C++ development on Windows
-* Node.js Tools 1.2 for Visual Studio 2015
+For JavaScript development
+* Download and install git and clone this repository
+* Emscripten - http://kripken.github.io/emscripten-site/
+* Windows Only - Mingw64 - http://mingw-w64.org/
 
-For C++ development on OSX
-* Xcode
-* Download and install git
-Note: The xcodeproj file has not been created yet, our apologies
+# How to build
+For windows
+1. Setup the Emscripten environment by running `emsdk_env.bat` wherever you installed it
+1. Setup the Mingw64 environment by running `mingw-w64.bat` wherever you installed it
+1. In the base folder of this repository, run `mingw32-make`
+1. In `Threadily.test.js` run `npm install`
+
+# How to run tests
+C++ tests can be run using the output executable `Threadily.test.cpp\debug\threadily.test.exe`
+
+Javascript tests can be run by running `npm test` in Threadily.test.js
 
 # How it works - by example
 Lets use an example to help understand how to get started. Let say you have an application of which shows some basic details about a user.
 ### Initialize the threads that are used in the application
 First, on app launch, you would let us know what threads need to exist in the system
 ```
+// Create a thread manager
 auto threadManager = std::make_shared<threadily::ThreadManager>();
-threadManager->getOrCreateThread(ThreadIds::ThreadId_UI); // UIThread -> doesn't inform anyone
-threadManager->getOrCreateThread(ThreadIds::ThreadId_Storage, { ThreadIds::ThreadId_UI }); // Storage thread -> sends notifications to UI thread
-threadManager->getOrCreateThread(ThreadIds::ThreadId_Service, { ThreadIds::ThreadId_Storage }); // Service thread -> Sends notifications to the Storage thread
+// Create the UI Thread
+threadManager->getOrCreateThread(ThreadIds::ThreadId_UI);
+// Create the Storage thread, which notifies the UI thread of changes
+threadManager->getOrCreateThread(ThreadIds::ThreadId_Storage, { ThreadIds::ThreadId_UI });
+// Create a Servie thread which notifies the Storage thread
+threadManager->getOrCreateThread(ThreadIds::ThreadId_Service, { ThreadIds::ThreadId_Storage });
 ```
-At this time, there are now three threads each of which have their own Object map and a Work Queue.
+So now whenever a Threadily object is updated in our system by the service thread, it will automatically send an update to the object on the storage thread which will send an update to the UI thread.
 
 ### Define the object
 We need to do some basic coding to define our objects in the system
@@ -142,4 +163,4 @@ userDetails_app->name->subscribe([this](std::wstring newValue)
 All of these objects run in their individual threads and each thread handles updates synchronously. This means the Storage Thread and the UI Thread can update simultaneously but never get updates out of order.
 
 # Coding examples
-We will be continuously adding new tests to Threadily.test.web and Threadily.test.windows so feel free to look in those projects for examples!
+We will be continuously adding new tests to `Threadily.test.js` and `Threadily.test.cpp` so feel free to look in those projects for examples!
