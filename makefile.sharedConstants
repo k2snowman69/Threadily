@@ -1,14 +1,14 @@
 # g++ flags
-ifndef $(GPP_FLAGS_DEBUG)
+ifndef GPP_FLAGS_DEBUG
     GPP_FLAGS_DEBUG = -std=c++11 -O0 -g3
 endif
-ifndef $(GPP_FLAGS_SHIP)
+ifndef GPP_FLAGS_SHIP
     GPP_FLAGS_SHIP = -std=c++11 -O3
 endif
 # emcc flags
-ifndef $(EMCC_FLAGS_DEBUG)
+ifndef EMCC_FLAGS_DEBUG
     EMCC_FLAGS_DEBUG = -std=c++11 -O0 -g4 -s NO_EXIT_RUNTIME=1 -s EXCEPTION_DEBUG=1 -s SAFE_HEAP=1
 endif
-ifndef $(EMCC_FLAGS_SHIP)
+ifndef EMCC_FLAGS_SHIP
     EMCC_FLAGS_SHIP = -std=c++11 -Oz -s NO_EXIT_RUNTIME=1
 endif
