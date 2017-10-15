@@ -21,9 +21,6 @@ TARGET_NAME_GCC_SHIP = ship/$(TARGET_NAME_GCC)
 HEADER_FILES_NO_SRC = $(patsubst src/%,%, $(HEADER_FILES))
 HEADER_FILES_DEBUG = $(patsubst %.h,debug/headers/%.h, $(HEADER_FILES_NO_SRC))
 HEADER_FILES_SHIP = $(patsubst %.h,ship/headers/%.h, $(HEADER_FILES_NO_SRC))
-# g++ flags
-GPP_FLAGS_DEBUG = -O0 -g3
-GPP_FLAGS_SHIP = -O3
 
 all: debug ship
 debug: debug_gcc debug_headers
@@ -35,19 +32,19 @@ ship_headers: $(HEADER_FILES_SHIP)
 
 $(TARGET_NAME_GCC_DEBUG): $(OBJ_FILES_DEBUG) $(LIBRARIES_DEBUG)
 	$(call MakeDir,$(dir $@))
-	g++ -std=c++11 $(call FixPath,$(OBJ_FILES_DEBUG)) -o $(call FixPath,$@) $(LIBRARIES_FLAGS_DEBUG) $(GPP_FLAGS_DEBUG)
+	g++ $(call FixPath,$(OBJ_FILES_DEBUG)) -o $(call FixPath,$@) $(LIBRARIES_FLAGS_DEBUG) $(GPP_FLAGS_DEBUG)
 
 $(TARGET_NAME_GCC_SHIP): $(OBJ_FILES_SHIP) $(LIBRARIES_SHIP)
 	$(call MakeDir,$(dir $@))
-	g++ -std=c++11 $(call FixPath,$(OBJ_FILES_SHIP)) -o $(call FixPath,$@) $(LIBRARIES_FLAGS_SHIP) $(GPP_FLAGS_SHIP)
+	g++ $(call FixPath,$(OBJ_FILES_SHIP)) -o $(call FixPath,$@) $(LIBRARIES_FLAGS_SHIP) $(GPP_FLAGS_SHIP)
 
 debug_obj/%.o: %.cpp
 	$(call MakeDir,$@)
-	g++ -std=c++11 -c $(call FixPath,$^) -o $(call FixPath,$@) $(LIBRARIES_FLAGS_DEBUG) $(GPP_FLAGS_DEBUG)
+	g++ -c $(call FixPath,$^) -o $(call FixPath,$@) $(LIBRARIES_FLAGS_DEBUG) $(GPP_FLAGS_DEBUG)
 
 ship_obj/%.o: %.cpp
 	$(call MakeDir,$@)
-	g++ -std=c++11 -c $(call FixPath,$^) -o $(call FixPath,$@) $(LIBRARIES_FLAGS_SHIP) $(GPP_FLAGS_SHIP)
+	g++ -c $(call FixPath,$^) -o $(call FixPath,$@) $(LIBRARIES_FLAGS_SHIP) $(GPP_FLAGS_SHIP)
 
 debug/headers/%: src/%
 	$(call MakeDir,$@)
