@@ -1,20 +1,26 @@
 # Useful methods or functions
 include makefile.sharedFunctions
 
-all: client client_shared client_shared_javascript client_shared_test
+.PHONY: all
+all: client_shared_test client_shared_javascript
 
+.PHONY: client
 client:
 	cd ./Threadily $(CmdSeparator) $(Make)
 	
-client_shared:
+.PHONY: client_shared
+client_shared: client
 	cd ./Threadily.SampleObjects $(CmdSeparator) $(Make)
 	
-client_shared_javascript:
+.PHONY: client_shared_javascript
+client_shared_javascript: client_shared
 	cd ./Threadily.SampleObjects.javascript $(CmdSeparator) $(Make)
 	
-client_shared_test:
+.PHONY: client_shared_test
+client_shared_test: client_shared
 	cd ./Threadily.test.cpp $(CmdSeparator) $(Make)
 
+.PHONY: clean
 clean:
 	cd $(call FixPath,./Threadily) $(CmdSeparator) $(Make) clean
 	cd $(call FixPath,./Threadily.SampleObjects) $(CmdSeparator) $(Make) clean
