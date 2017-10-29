@@ -2,28 +2,28 @@
 
 declare module "threadily" {
     // Observable.cpp
-    interface ISubscribeHandle {
+    export interface ISubscribeHandle {
     }
-    interface ObservableCallback<T> {
+    export interface ObservableCallback<T> {
         onChange(T): void;
         implement: any;
     }
-    interface Observable<T> {
+    export interface Observable<T> {
         get(): T;
         set(newValue: T): void;
         subscribe(callback: ObservableCallback<T>): ISubscribeHandle;
         unsubscribe(handle: ISubscribeHandle): void;
     }
-    enum ObservableActionType {
+    export enum ObservableActionType {
         Insert = 0,
         Erase = 1,
         Set = 2,
     }
-    interface ObservableVectorCallback<T> {
+    export interface ObservableVectorCallback<T> {
         onChange(newValue: T): void;
         implement: any;
     }
-    interface ObservableVector<T> {
+    export interface ObservableVector<T> {
         size(): number;
         at(index: number): T;
         insert(index: number, value: T): void;
@@ -34,46 +34,49 @@ declare module "threadily" {
         unsubscribe(handle: ISubscribeHandle): void;
     }
     // ThreadManager.cpp
-    interface VectorUnsignedInt {
+    export interface VectorUnsignedInt {
         new(): VectorUnsignedInt;
         push_back(value: number): void;
     }
-    interface IThreadManager {
+    export interface IThreadManager {
         clear(): void;
     }
-    interface ThreadManager extends IThreadManager {
+    export interface ThreadManager extends IThreadManager {
         new(): ThreadManager;
         // TODO: Replace any with an actual definition
         getOrCreateThread(threadId: number, notifiesThreadIds: VectorUnsignedInt, runner: any): any;
     }
     // ThreadObject.cpp
-    interface IThreadObject {
+    export interface IThreadObject {
         getThreadId: () => number;
         getInstanceId: () => IThreadObjectId;
-        getReference: () => IThreadObject;
+        clone<T>(): T;
+        delete: () => void;
+        isDeleted: () => boolean;
     }
-    interface ThreadObject<T extends IThreadObjectId> extends IThreadObject {
+    export interface ThreadObject<T extends IThreadObjectId> extends IThreadObject {
+        getId: () => T;
     }
-    interface ThreadObject_ThreadObjectId extends ThreadObject<ThreadObjectId> {
+    export interface ThreadObject_ThreadObjectId extends ThreadObject<ThreadObjectId> {
     }
     // ThreadObjectId.cpp
-    interface IThreadObjectId {
+    export interface IThreadObjectId {
     }
-    interface ThreadObjectId {
+    export interface ThreadObjectId {
         instanceId: number;
     }
     // ThreadObjectManager.cpp
-    interface IThreadObjectManager {
+    export interface IThreadObjectManager {
         getThreadManager(): IThreadManager;
     }
-    interface ThreadObjectManager<T> extends IThreadObjectManager {
+    export interface ThreadObjectManager<T> extends IThreadObjectManager {
         new(threadManager: ThreadManager);
         getOrCreateObject(threadId: number, id: IThreadObjectId): T;
     }
     // ThreadQueueItem.cpp - Ignored as it's used internally
     // ThreadQueueItemHandler.cpp - Ignored as it's used internally
     // ThreadQueueItemManager.cpp - Ignored as it's used internally
-    interface Threadily {
+    export interface Threadily {
         ThreadManager: ThreadManager;
         VectorUnsignedInt: VectorUnsignedInt;
         ISubscribeHandleBoolCallback: ObservableCallback<boolean>;
