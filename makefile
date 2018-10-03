@@ -36,8 +36,3 @@ clean:
 	cd $(call FixPath,./sample-objects-cpp-test) $(CmdSeparator) $(Make) clean
 	cd $(call FixPath,./sample-objects-js) $(CmdSeparator) $(Make) clean
 	cd $(call FixPath,./sample-objects-js-test) $(CmdSeparator) $(Make) clean
-	cd $(call FixPath,./threadily) $(CmdSeparator) $(call RemoveDir,node_modules)
-	cd $(call FixPath,./sample-objects-cpp) $(CmdSeparator) $(call RemoveDir,node_modules)
-	cd $(call FixPath,./sample-objects-cpp-test) $(CmdSeparator) $(call RemoveDir,node_modules)
-	cd $(call FixPath,./sample-objects-js) $(CmdSeparator) $(call RemoveDir,node_modules)
-	cd $(call FixPath,./sample-objects-js-test) $(CmdSeparator) $(call RemoveDir,node_modules)
