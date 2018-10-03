@@ -18,27 +18,61 @@ or if you have already cloned the repository without --recursive, in your local 
 
 `git submodule update --init --recursive`
 
-# What you'll need to get started
-For C++ development
-* Download and install git and clone this repository
-* Windows Only - Mingw64 - http://mingw-w64.org/
+# Dependencies
+There are several dependencies to compiling this project.
 
-For JavaScript development
-* Download and install git and clone this repository
-* Emscripten - http://kripken.github.io/emscripten-site/
-* Windows Only - Mingw64 - http://mingw-w64.org/
+## Emscripten
+Emscripten is a C++ to JavaScript compiler which converts C++ code into JavaScript.
+http://kripken.github.io/emscripten-site/
+You'll need the SDK at minimum
 
-# How to build
-For windows
-1. Setup the Emscripten environment by running `emsdk_env.bat` wherever you installed it
-1. Setup the Mingw64 environment by running `mingw-w64.bat` wherever you installed it
-1. In the base folder of this repository, run `mingw32-make`
-1. In `Threadily.test.js` run `npm install`
+## Windows only - Mingw64
+Mingw64 allows for make to be run on windows.
+http://mingw-w64.org/
+
+# Setting up the CMD
+Note: I've been doing this on Windows but it should compile on unix or linux with a few minor fixes. Most likely, it's the npm scripts that would give you the biggest hurdles.
+
+# Building
+## client-shared-cpp, client-shared-js, client-shared-cpp-test
+On Windows
+1. Open a prompt window
+1. Setup the emscripten sdk by running `emsdk_env.bat` from wherever you installed
+1. Set the path to include your MinGW location (e.g. `PATH = %PATH%;D:/MinGW/mingw64/bin`)
+1. Run `mingw32-make`
+
+On Unix (or Unix based system)
+1. Open a terminal window
+1. Setup the emscripten sdk by running `source ./emsdk_env.sh` from wherever you installed
+1. Run `make`
+
+Other notes:
+ - You can also run make from the root directory, and it will recurse into all the sub directories.
+ - Use the -jN feature to run multiple processors for faster builds
 
 # How to run tests
-C++ tests can be run using the output executable `Threadily.test.cpp\debug\threadily.test.exe`
+C++ tests can be run using the output executable `Threadily.test.cpp\debug\threadily.test.exe`. You can change the reporter status to get more details from the tests. `--reporter=spec` is a pretty good start, more information can be found via [banditcpp's documentation](https://github.com/banditcpp/bandit)
 
 Javascript tests can be run by running `npm test` in Threadily.test.js
+
+You can also run `make test` from the root directory and it will run all tests
+
+# Last checked versions
+This example code was last verified on Windows on October 1st, 2018
+| Tool          | Version |
+| ------------- | -------- |
+| Windows | 10 Version 1803 |
+| EMCC | 1.38.12 (commit 0d8576c0e8f5ee09a36120b9d44184b5da2f2e7a) |
+| Node | 8.9.1 |
+| mingw32-make | v5.0.0 |
+
+This example code was last verified on OSX on October 1st, 2018
+| Tool          | Version |
+| ------------- | -------- |
+| macOS | Version 10.13.6 |
+| EMCC | 1.38.12 (commit 0d8576c0e8f5ee09a36120b9d44184b5da2f2e7a) |
+| Node | 8.12.0 |
+| make | GNU Make 3.81 |
 
 # How it works - by example
 Lets use an example to help understand how to get started. Let say you have an application of which shows some basic details about a user.
@@ -163,4 +197,4 @@ userDetails_app->name->subscribe([this](std::wstring newValue)
 All of these objects run in their individual threads and each thread handles updates synchronously. This means the Storage Thread and the UI Thread can update simultaneously but never get updates out of order.
 
 # Coding examples
-We will be continuously adding new tests to `Threadily.test.js` and `Threadily.test.cpp` so feel free to look in those projects for examples!
+We will be continuously adding new tests to `sample-object-js-test` and `sample-object-cpp-test` so feel free to look in those projects for examples!

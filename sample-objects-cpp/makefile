@@ -4,14 +4,19 @@ include ../makefile.sharedFunctions
 # Inputs
 CPP_FILES = $(call rwildcard,src/,*.cpp) 
 HEADER_FILES = $(call rwildcard,src/,*.h) 
+# Dependent libraries
+LIBRARIES_DEBUG = $(call FixPath,../threadily/debug/libthreadily.a)
+LIBRARIES_SHIP = $(call FixPath,../threadily/ship/libthreadily.a)
+LIBRARIES_FLAGS_DEBUG = -I$(call FixPath,../threadily/debug/headers) -L$(call FixPath,../threadily/debug) -lthreadily
+LIBRARIES_FLAGS_SHIP = -I$(call FixPath,../threadily/ship/headers) -L$(call FixPath,../threadily/ship) -lthreadily
 # Intermediary outputs
 OBJ_FILES_DEBUG_GCC = $(patsubst %.cpp,debug_obj/gcc/%.o, $(CPP_FILES))
 OBJ_FILES_SHIP_GCC = $(patsubst %.cpp,ship_obj/gcc/%.o, $(CPP_FILES))
 OBJ_FILES_DEBUG_EMCC = $(patsubst %.cpp,debug_obj/emcc/%.o, $(CPP_FILES))
 OBJ_FILES_SHIP_EMCC = $(patsubst %.cpp,ship_obj/emcc/%.o, $(CPP_FILES))
 # Outputs
-TARGET_NAME_GCC = libthreadily.a
-TARGET_NAME_EMCC = threadily.bc
+TARGET_NAME_GCC = libsample-objects.a
+TARGET_NAME_EMCC = sample-objects.bc
 TARGET_NAME_GCC_DEBUG = debug/$(TARGET_NAME_GCC)
 TARGET_NAME_GCC_SHIP = ship/$(TARGET_NAME_GCC)
 TARGET_NAME_EMCC_DEBUG = debug/$(TARGET_NAME_EMCC)
@@ -41,27 +46,27 @@ $(TARGET_NAME_GCC_SHIP): $(OBJ_FILES_SHIP_GCC)
 
 $(TARGET_NAME_EMCC_DEBUG): $(OBJ_FILES_DEBUG_EMCC)
 	$(call MakeDir,$(dir $@))
-	emcc $(call FixPath,$^) -o $(call FixPath,$@) $(EMCC_FLAGS_DEBUG)
+	emcc $(call FixPath,$^) -o $(call FixPath,$@) $(EMCC_FLAGS_DEBUG) $(LIBRARIES_FLAGS_DEBUG)
 
 $(TARGET_NAME_EMCC_SHIP): $(OBJ_FILES_SHIP_EMCC)
 	$(call MakeDir,$(dir $@))
-	emcc $(call FixPath,$^) -o $(call FixPath,$@) $(EMCC_FLAGS_SHIP)
+	emcc $(call FixPath,$^) -o $(call FixPath,$@) $(EMCC_FLAGS_SHIP) $(LIBRARIES_FLAGS_DEBUG)
 
 debug_obj/gcc/%.o: %.cpp
 	$(call MakeDir,$(dir $@))
-	g++ -c $(call FixPath,$^) -o $(call FixPath,$@) $(GPP_FLAGS_DEBUG)
+	g++ -c $(call FixPath,$^) -o $(call FixPath,$@) $(GPP_FLAGS_DEBUG) $(LIBRARIES_FLAGS_DEBUG)
 
 ship_obj/gcc/%.o: %.cpp
 	$(call MakeDir,$(dir $@))
-	g++ -c $(call FixPath,$^) -o $(call FixPath,$@) $(GPP_FLAGS_SHIP)
+	g++ -c $(call FixPath,$^) -o $(call FixPath,$@) $(GPP_FLAGS_SHIP) $(LIBRARIES_FLAGS_DEBUG)
 
 debug_obj/emcc/%.o: %.cpp
 	$(call MakeDir,$(dir $@))
-	emcc -c $(call FixPath,$^) -o $(call FixPath,$@) $(EMCC_FLAGS_DEBUG)
+	emcc -c $(call FixPath,$^) -o $(call FixPath,$@) $(EMCC_FLAGS_DEBUG) $(LIBRARIES_FLAGS_DEBUG)
 
 ship_obj/emcc/%.o: %.cpp
 	$(call MakeDir,$(dir $@))
-	emcc -c $(call FixPath,$^) -o $(call FixPath,$@) $(EMCC_FLAGS_SHIP)
+	emcc -c $(call FixPath,$^) -o $(call FixPath,$@) $(EMCC_FLAGS_SHIP) $(LIBRARIES_FLAGS_DEBUG)
 
 debug/headers/%: src/%
 	$(call MakeDir,$(dir $@))

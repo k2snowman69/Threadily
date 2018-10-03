@@ -2,27 +2,42 @@
 include makefile.sharedFunctions
 
 .PHONY: all
-all: client_shared_test client_shared_javascript
+all: sample_objects_cpp_test sample_objects_js_test
 
-.PHONY: client
-client:
-	cd ./Threadily $(CmdSeparator) $(Make)
+.PHONY: threadily
+threadily:
+	cd ./threadily $(CmdSeparator) $(Make)
 	
-.PHONY: client_shared
-client_shared: client
-	cd ./Threadily.SampleObjects $(CmdSeparator) $(Make)
+.PHONY: sample_objects_cpp
+sample_objects_cpp: threadily
+	cd ./sample-objects-cpp $(CmdSeparator) $(Make)
 	
-.PHONY: client_shared_javascript
-client_shared_javascript: client_shared
-	cd ./Threadily.SampleObjects.javascript $(CmdSeparator) $(Make)
+.PHONY: sample_objects_js
+sample_objects_js: sample_objects_cpp
+	cd ./sample-objects-js $(CmdSeparator) $(Make)
 	
-.PHONY: client_shared_test
-client_shared_test: client_shared
-	cd ./Threadily.test.cpp $(CmdSeparator) $(Make)
+.PHONY: sample_objects_js_test
+sample_objects_js_test: sample_objects_js
+	cd ./sample-objects-js-test $(CmdSeparator) $(Make)
+	
+.PHONY: sample_objects_cpp_test
+sample_objects_cpp_test: sample_objects_cpp
+	cd ./sample-objects-cpp-test $(CmdSeparator) $(Make)
+
+.PHONY: test
+test: sample_objects_js_test sample_objects_cpp_test
+	cd ./sample-objects-cpp-test $(CmdSeparator) $(Make) test
+	cd ./sample-objects-js-test $(CmdSeparator) $(Make) test
 
 .PHONY: clean
 clean:
-	cd $(call FixPath,./Threadily) $(CmdSeparator) $(Make) clean
-	cd $(call FixPath,./Threadily.SampleObjects) $(CmdSeparator) $(Make) clean
-	cd $(call FixPath,./Threadily.SampleObjects.javascript) $(CmdSeparator) $(Make) clean
-	cd $(call FixPath,./Threadily.test.cpp) $(CmdSeparator) $(Make) clean
+	cd $(call FixPath,./threadily) $(CmdSeparator) $(Make) clean
+	cd $(call FixPath,./sample-objects-cpp) $(CmdSeparator) $(Make) clean
+	cd $(call FixPath,./sample-objects-cpp-test) $(CmdSeparator) $(Make) clean
+	cd $(call FixPath,./sample-objects-js) $(CmdSeparator) $(Make) clean
+	cd $(call FixPath,./sample-objects-js-test) $(CmdSeparator) $(Make) clean
+	cd $(call FixPath,./threadily) $(CmdSeparator) $(call RemoveDir,node_modules)
+	cd $(call FixPath,./sample-objects-cpp) $(CmdSeparator) $(call RemoveDir,node_modules)
+	cd $(call FixPath,./sample-objects-cpp-test) $(CmdSeparator) $(call RemoveDir,node_modules)
+	cd $(call FixPath,./sample-objects-js) $(CmdSeparator) $(call RemoveDir,node_modules)
+	cd $(call FixPath,./sample-objects-js-test) $(CmdSeparator) $(call RemoveDir,node_modules)
