@@ -5,14 +5,18 @@ jobs:
       - image: trzeci/emscripten:sdk-incoming-64bit
     steps:
       - run:
-          name: Clone shared-makefile
-          command: git clone https://github.com/k2snowman69/shared-makefile
-      - run:
-          name: Clone threadily
-          command: git clone https://github.com/k2snowman69/threadily
+          name: Clone repo and build dependencies
+          command: |
+            git clone https://github.com/k2snowman69/shared-makefile
+            git clone https://github.com/k2snowman69/threadily
       - run:
           name: Checkout branch
-          command: cd threadily && git fetch --all && git checkout ${CIRCLE_BRANCH}
+          command: |
+            cd threadily 
+            git fetch --all
+            git checkout ${CIRCLE_BRANCH}
       - run:
           name: Run make
-          command: cd threadily && make
+          command: |
+            cd threadily
+            make
