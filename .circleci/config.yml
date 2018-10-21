@@ -7,6 +7,7 @@ jobs:
       - run:
           name: Clone repo and build dependencies
           command: |
+            git clone https://github.com/banditcpp/bandit
             git clone https://github.com/k2snowman69/shared-makefile
             git clone https://github.com/k2snowman69/threadily
             git clone https://github.com/k2snowman69/threadily-sample-cpp
