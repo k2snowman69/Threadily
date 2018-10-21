@@ -1,0 +1,14 @@
+version: 2
+jobs:
+  build:
+    docker:
+      - image: trzeci/emscripten/
+    steps:
+      - run: git clone https://github.com/k2snowman69/shared-makefile
+      - run: git clone https://github.com/k2snowman69/threadily
+      - run:
+          name: cd
+          command: cd threadily
+      - run:
+          name: build
+          command: make
