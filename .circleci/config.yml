@@ -10,10 +10,9 @@ jobs:
       - run:
           name: Clone threadily
           command: git clone https://github.com/k2snowman69/threadily
-      - run: echo ${CIRCLE_BRANCH}
       - run:
           name: Checkout branch
-          command: git fetch --all && git checkout ${CIRCLE_BRANCH}
+          command: cd threadily && git fetch --all && git checkout ${CIRCLE_BRANCH}
       - run:
           name: Run make
           command: cd threadily && make
