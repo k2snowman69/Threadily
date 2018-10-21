@@ -6,5 +6,4 @@ jobs:
     steps:
       - run: git clone https://github.com/k2snowman69/shared-makefile
       - run: git clone https://github.com/k2snowman69/threadily
-      - run: cd threadily
-      - run: make
+      - run: cd threadily && make
