@@ -16,4 +16,4 @@ jobs:
             git checkout ${CIRCLE_BRANCH}
       - run:
           name: Build threadily-sample and run test
-            make test
+          command: make test
