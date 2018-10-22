@@ -15,17 +15,5 @@ jobs:
             git fetch --all
             git checkout ${CIRCLE_BRANCH}
       - run:
-          name: Make threadily
-          command: |
-            cd threadily
-            make
-      - run:
-          name: Make threadily-sample-cpp
-          command: |
-            cd threadily-sample-cpp
-            make
-      - run:
-          name: Make threadily-sample-cpp-test
-          command: |
-            cd threadily-sample-cpp-test
+          name: Build threadily-sample and run test
             make test
