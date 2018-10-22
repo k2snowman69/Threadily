@@ -11,7 +11,7 @@ jobs:
       - run:
           name: Checkout branch
           command: |
-            cd threadily 
+            cd ./threadily-sample/threadily 
             git fetch --all
             git checkout ${CIRCLE_BRANCH}
       - run:
